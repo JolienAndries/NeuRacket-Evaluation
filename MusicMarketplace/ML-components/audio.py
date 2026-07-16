@@ -15,7 +15,7 @@ import os
 
 print("AUDIO MODEL")
 
-data_filename = "../ML-components/training_data_audio.csv"
+data_filename = "../../../training_data_audio.csv"
 # https://huggingface.co/dima806/music_genres_classification
 RATE_HZ = 16000 # resampling rate in Hz
 MAX_LENGTH = 240000 # maximum audio interval length to consider (= RATE_HZ * SECONDS)
