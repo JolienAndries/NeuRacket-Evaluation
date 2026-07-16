@@ -41,7 +41,6 @@
        [sold '()]))
 
 (define dummy-track
-;; (string->path "/Users/jolienandries/Documents/NeuRacket/a-hit.wav")
   (string->path "../a-hit.wav"))
 
 (define track

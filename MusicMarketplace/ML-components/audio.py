@@ -62,11 +62,3 @@ def train(file_path, genre, instrument, bpm):
         if not file_exists:
             writer.writerow(['FilePath', 'Genre', 'Instrument', 'BPM'])
         writer.writerow([file_path, genre, instrument, bpm])
-
-"""
-train("/Users/jolienandries/Documents/NeuRacket/a-hit.wav", "rock", "guitar", 118)
-print("trained")
-genre, instrument, bpm = infer("/Users/jolienandries/Documents/NeuRacket/a-hit.wav")
-print(genre)
-print("done")
-"""

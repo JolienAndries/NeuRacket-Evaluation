@@ -3,7 +3,7 @@
 (provide (all-defined-out))
 
 (defMLObject recommendation-model
-  [file "../ML-components/recommendation.py"];;"/Users/jolienandries/Documents/NeuRacket/ML-components/recommendation.py"]
+  [file "../ML-components/recommendation.py"]
   [infer "infer"]
   [train "train"]
   [input user-genre (extract-albums user-bought) user-mood user-birth (extract-albums possible-albums)]

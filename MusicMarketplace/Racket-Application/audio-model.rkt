@@ -19,7 +19,6 @@
         (else value)))
 
 (define audio-model (new (class object% (super-new)
-                           ;;(run* "with open('/Users/jolienandries/Documents/NeuRacket/ML-components/audio.py') as file: exec(file.read())")
                            (run* "with open('../ML-components/audio.py') as file: exec(file.read())")
                            (define python-train (run "train"))
                            (define python-infer (run "infer"))

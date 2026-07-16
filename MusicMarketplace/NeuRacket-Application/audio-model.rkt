@@ -5,7 +5,6 @@
 
 (defMLObject audio-model
   [file "../ML-components/audio.py"]
-  ;;[file "/Users/jolienandries/Documents/NeuRacket/ML-components/audio.py"]
   [infer "infer"]
   [train "train"]
   [input (path->string file-path)]

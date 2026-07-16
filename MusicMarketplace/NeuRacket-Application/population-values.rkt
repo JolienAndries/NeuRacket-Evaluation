@@ -3,7 +3,7 @@
 
 (provide album-population artist-population)
 
-(define dummy-track (string->path "../a-hit.wav"));;(string->path "/Users/jolienandries/Documents/NeuRacket/a-hit.wav"))
+(define dummy-track (string->path "../a-hit.wav"))
 
 (define taylor-swift (new artist%
                           [username "taylor swift"]

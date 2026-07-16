@@ -42,7 +42,6 @@
 
 (define dummy-track
   (string->path "../a-hit.wav"))
-  ;;(string->path "/Users/jolienandries/Documents/NeuRacket/a-hit.wav"))
 
 (define track
   (new track%
