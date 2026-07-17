@@ -10,8 +10,9 @@
 
 (defneuralslice (training-intensity-slice workout user)
   [target-fields [workout training-intensity]]
-  [input-fields [workout elevation-difference] [workout duration] [workout distance]
-                [workout duration] [workout distance]
-                [user birthday] [user weight] [user height]
-                [user workouts] [user workouts][user workouts][user workouts]]
-  [MLObject training-intensity-model])
+  [input-fields  [workout elevation-difference] [workout duration] [workout distance]
+                 [workout duration] [workout distance]
+                 [user birthday] [user weight] [user height]
+                 [user workouts] [user workouts][user workouts][user workouts]]
+  [MLObject training-intensity-model]
+  [label-fields  [workout perceived-intensity]])

@@ -127,10 +127,10 @@
                    (super-new)
                    (init-field start-date end-date route max-elevation min-elevation)
                    (field [injuries '()]
-                          [perceived-intensity 0]
                           [duration (time-diff-s start-date end-date)]
                           [elevation-difference (-  max-elevation  min-elevation)]
                           [distance (route->distance route)])
+                   (label-field [perceived-intensity 0])
                    (external-neural-field training-intensity)
                    
 
