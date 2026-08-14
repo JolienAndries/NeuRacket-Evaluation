@@ -67,7 +67,7 @@
                            [parent info]
                            [callback (lambda (s e)
                                        (let ((perceived-intensity (send s get-value)))
-                                         (begin-train (set-field! perceived-intensity workout perceived-intensity))))]))
+                                         (set-field! perceived-intensity workout perceived-intensity)))]))
     (send intensity set-value (get-field perceived-intensity workout))
 
     (let ((injuries (get-field injuries workout)))

@@ -7,9 +7,9 @@
                 (init-field name password birthday sex weight height
                             [races-run '()]
                             [upcoming-races '()]
-                            [injuries '()]
                             [workouts '()])
-                (neural-field [(injury-risk?) injury-prediction-model (birthday weight height injuries workouts)])
+                (label-field [injuries '()])
+                (neural-field [(injury-risk?) injury-prediction-model (birthday weight height injuries workouts) (injuries)])
                 
                 (define/public (add-workout! workout)
                   (set! workouts (cons workout workouts))
@@ -24,9 +24,7 @@
                     (if race-found? (car race-found?) race-found?)))
                 
                 (define/public (add-injury! injury)
-                  (begin-train
-                    (set-field! injury-risk? this 1)
-                    (set! injuries (cons injury injuries))))
+                  (set! injuries (cons injury injuries)))
                 
                 (define/public (race-run! race)
                   (set! upcoming-races (remove race upcoming-races))
@@ -51,13 +49,11 @@
                   (super-new)))
 
 (define user-race% (class object%
-                     (init-field race [predicting-workout1 #f] [predicting-workout2 #f] [run? #f])
+                     (init-field race [predicting-workout1 #f] [predicting-workout2 #f])
+                     (label-field [workout #f])
                      (external-neural-field time-prediction)
-                     (define/public (assoc-workout! workout)
-                       (unless run?
-                         (begin-train
-                           (when (and predicting-workout1 predicting-workout2) (set-field! time-prediction this (get-field duration workout)))
-                           (set-field! run? this workout))))
+                     (define/public (assoc-workout! new-workout)
+                      (set-field! workout this new-workout))
                      (super-new)))
 
 (define race% (class object%

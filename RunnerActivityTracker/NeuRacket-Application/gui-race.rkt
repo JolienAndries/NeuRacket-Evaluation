@@ -59,7 +59,7 @@
       (let ((register-panel (new vertical-panel% [parent top]))
             (user-race (send register-user registered-race race)))
         (if user-race
-            (let ((assoc-workout (get-field run? user-race))
+            (let ((assoc-workout (get-field workout user-race))
                   (workouts (get-field workouts register-user)))
               (define (choose-workout label callback-func)
                 (new custom-choice%

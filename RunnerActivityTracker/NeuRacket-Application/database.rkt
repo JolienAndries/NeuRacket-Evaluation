@@ -28,6 +28,7 @@
 (define database (new database%))
 
 (define (fill-database!)
+  (displayln "OOOOOOOOOOOOOO")
   (let* ((20bxl (parse-gpx "../../../gpx-workouts/20km_door_Brussel_Strava_Export.gpx"))
          (S2R5.2 (parse-gpx "../../../gpx-workouts/S2R_W5S2.gpx"))
          (S2R5.3 (parse-gpx "../../../gpx-workouts/S2R_W5S3.gpx"))
@@ -49,23 +50,32 @@
                              [what "hamstring strain"]
                              [body-part "leg"]
                              [recovered? #f])))
+    
     (set-field! users database (list (cons (get-field name jolien) jolien)
                                      (cons (get-field name evi) evi)))
+    
     (new-neural-slice training-intensity-slice 20bxl evi)
     (new-neural-slice training-intensity-slice S2R5.2 jolien)
     (new-neural-slice training-intensity-slice S2R5.3 jolien)
+    
     (send evi add-injury! evi-injury)
     (send jolien add-injury! jolien-injury)
     (set-field! races database (list (cons (get-field name brussels-20k) brussels-20k)
                                      (cons (get-field name amsterdam-marathon) amsterdam-marathon)
                                      (cons (get-field name vienna-marathon) vienna-marathon)))
+    (display "C")
     (send brussels-20k register evi)
+    (display "B")
     (send evi register evi-brussels-race)
+    (display "A")
     (send evi-brussels-race assoc-workout! 20bxl)
+    (displayln "D")
     (send evi race-run! evi-brussels-race)
-    
+    (displayln "E")
     (send amsterdam-marathon register jolien)
     (send jolien register jolien-amsterdam-race)))
 
 
 (fill-database!)
+
+(displayln "dit zegt dus niks")
