@@ -335,8 +335,6 @@
                                                         (album (send marketplace find-album (vector-ref album-title-artist 0) (vector-ref album-title-artist 1))))
                                                    (set-album-panel! album)
                                                    (set! selected-album album)
-                                                   (begin-train
-                                                     (set-field! relevant-albums (get-field current-user marketplace) (list album))) ;; <- 
                                                    ;; vervang picking panel door specifiek album panel
                                                    (send application-frame change-children (lambda (children) 
                                                                                              (map (lambda (child)
@@ -473,10 +471,11 @@
 (define (open-price-tab album product)
   (send selling-panel change-children
         (lambda (children)
-          (define suggested-price (get-field price product)) 
+          (define suggested-price (get-field predicted-price product)) 
           (define manual-price (new text-field% [label "Change price"] [parent selling-panel]))
-          (define (add-product! product)
-            (send marketplace sell-product! product) 
+          (define (add-product! product chosen-price)
+            (send marketplace sell-product! product)
+            (set-field! price product chosen-price)
             (send selling-pop-up show #f))
           
           (list
@@ -485,16 +484,14 @@
            (new button% [parent selling-panel]
                 [label "Accept price"]
                 [callback (lambda (b e)
-                            (add-product! product))])
+                            (add-product! product suggested-price))])
            manual-price
            (new button% [parent selling-panel]
                 [label "Sell for a custom price"]
                 [callback (lambda (b e)
                             (let ((manual-price (string->number (send manual-price get-value))))
                               (if manual-price
-                                  (begin-train
-                                    (set-field! price product manual-price)
-                                    (add-product! product)) 
+                                  (add-product! product manual-price) 
                                   (new message% [label "Missing Fields - Please fill in a custom price if you want to have a custom price."] [parent selling-panel]))))])))))
 
 
@@ -506,7 +503,7 @@
        [style '(extended vertical-label)]
        [callback (lambda (listbox event)
                    (let ((selected (send listbox get-selections)))
-                     (unless (null? selected)
+                     (unless (or (null? selected) (not selected-album))
                        (let ((panel-function (send listbox get-data (car selected)))
                              (format (list-ref format-choices (car selected))))
                          (panel-function selected-album format)
@@ -622,9 +619,9 @@
 (define (updated-track-analysis-panel new-track)
   (send track-analysis-panel change-children
         (lambda (children)
-          (let ((proposed-bpm (get-field bpm new-track))
-                (proposed-genre  (get-field genre new-track))
-                (proposed-instrument (get-field instrument new-track)))
+          (let ((proposed-bpm (get-field predicted-bpm new-track))
+                (proposed-genre  (get-field predicted-genre new-track))
+                (proposed-instrument (get-field predicted-instrument new-track)))
             ;; propose
             (define track-genre-proposed
               (new message% [parent track-analysis-panel]
@@ -719,12 +716,11 @@
                   [callback
                    (lambda (button event)
                      ;; update track properties
-                     (begin-train
-                       (set-fields! (instrument genre bpm)
-                                    new-track
-                                    (proposed-instrument
-                                     proposed-genre
-                                     proposed-bpm))) 
+                     (set-fields! (instrument genre bpm)
+                                  new-track
+                                  (proposed-instrument
+                                   proposed-genre
+                                   proposed-bpm))
                      ;; add the track to the track list
                      (set! track-list (cons new-track
                                             track-list))
@@ -806,7 +802,6 @@
   (let ((track-artist (get-field artist track)))
     (send specific-track-panel change-children
           (lambda (children)
-          
             `(,(new message% [parent specific-track-panel] [label "Title"])
               ,(new message% [parent specific-track-panel]
                     [label (get-field title track)])
@@ -843,20 +838,23 @@
               ,(new message%
                     [parent specific-track-panel]
                     [label
-                     (string-append "Instrument: "  (get-field instrument track))])
+                     (string-append "Instrument: "  (let ((instrument (get-field instrument track)))
+                                                      (if instrument instrument (get-field predicted-instrument track))))])
                                                
 
               ,(new message%
                     [parent specific-track-panel]
-                    [label (string-append "Genre: "  (get-field genre track))])
+                    [label (string-append "Genre: "  (let ((genre (get-field genre track)))
+                                                       (if genre genre (get-field predicted-genre track))))])
                                                
 
               ,(new message%
                     [parent specific-track-panel]
                     [label
                      (string-append "BPM: "
-                                    (number->string (get-field bpm track)))])))))
-  (only-show-list-panels application-frame `(,specific-track-panel)))
+                                    (number->string (let ((bpm (get-field bpm track)))
+                                                      (if bpm bpm (get-field predicted-bpm track)))))])))))
+  (only-show-list-panels application-frame `(,specific-track-panel))) 
 
 
 
@@ -953,7 +951,7 @@
                       [label "Buy"]
                       [parent specific-product-panel]
                       [callback (lambda (btn evt)
-                                  (if (send product buy)
+                                  (if (send marketplace buy-product! product)
                                       (send buy-button-msg set-label "Purchase successful!")
                                       (send buy-button-msg set-label "Could not buy")))])
                  buy-button-msg))))

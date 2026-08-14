@@ -5,14 +5,16 @@
 
 ;; neural-slice
 (defneuralslice (recommendation-slice user marketplace)
-  [target-fields [user relevant-albums]] ;; target fields adhv argumenten
-  [input-fields  [user main-genre] [user bought] [user overarching-mood] [user birth-year] [marketplace albums]] ;; inputfields adhv argumenten
+  [input-fields  [user main-genre] [user bought] [user overarching-mood] [user birth-year] [marketplace albums]] 
+  [label-fields  [user bought]]
+  [target-fields [user relevant-albums]] 
   [MLObject recommendation-model])
 
 
 (defneuralslice (artist-recommendation-slice user marketplace)
-  [target-fields [user relevant-albums]] ;; target fields adhv argumenten
   [input-fields  [user main-genre] [user discography] [user overarching-mood] [user birth-year] [marketplace albums]] ;; inputfields adhv argumenten
+  [label-fields  [user discography]]
+  [target-fields [user relevant-albums]] ;; target fields adhv argumenten
   [MLObject recommendation-model])
 
 
@@ -34,12 +36,16 @@
                          
                            (define/public (buy-product! product)
                              (if current-user
-                                 (send product buy)
+                                 (begin (send product buy)
+                                        (send current-user buy-album! (send product content)))
                                  (displayln "Please log in to buy a product.")))
 
                            (define/public (sell-product! product)
-                             (if current-user
-                                 (let ((album (get-field content product)))
+                              (if current-user
+                                 (let ((album (begin (displayln product) (get-field content product))))
+                                   (displayln album)
+                                   (displayln "---------------------------------------")
+                                                    
                                    ;; update marketplace catalogue and album selling-formats
                                    (set! products (cons product products))
                                    (set-field! selling-formats album (cons product (get-field selling-formats album))))

@@ -15,16 +15,16 @@
                   (set! to-sell (cons album to-sell)))
                 (super-new)))
 
-(define artist% (class user%                     
-                  (field [discography '()])
+(define artist% (class user%
+                  (super-new)
+                  (label-field [discography '()])
 
                   (define/public (release-album! album)
-                    (set! discography (cons album discography)))
-                  (super-new)))
+                    (set-field! discography this (cons album (get-field discography this))))))
 
 (define regular% (class user%
                    (super-new)
                    (inherit-field birth-year main-genre overarching-mood)
-                   (field [bought '()])
+                   (label-field [bought '()])
                    (define/public (buy-album! album)
-                     (set! bought (cons album bought)))))
+                     (set-field! bought this (cons album (get-field bought this))))))

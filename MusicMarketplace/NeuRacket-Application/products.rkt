@@ -27,7 +27,8 @@
                  (super-new)
                  (inherit-field title artist release-year mood languages)
                  (init-field file)
-                 (neural-field [(genre instrument bpm) audio-model (file)])))
+                 (label-field [genre #f] [instrument #f] [bpm #f])
+                 (neural-field [(predicted-genre predicted-instrument predicted-bpm) audio-model (file) (genre instrument bpm)])))
 
 
 
@@ -37,16 +38,17 @@
 (define product% (class object%
                    (super-new)
                    (init-field seller content product-format [times-viewed 0] [times-sold 0])
-                   (abstract-neural-field [(price) (times-viewed times-sold)])
+                   (label-field [price #f])
+                   (abstract-neural-field [(predicted-price) (times-viewed times-sold) (price)])
                    (define/public (buy) #f)))
 
 (define physical% (class product%
                     (inherit-field price product-format)
                     (super-new)
                     
-                    (init-field  media-condition sleeve-condition [stock 0])
+                    (init-field media-condition sleeve-condition [stock 0])
 
-                    (override-neural-field [(price) price-model-physical (product-format media-condition sleeve-condition stock)])
+                    (override-neural-field [(predicted-price) price-model-physical (product-format media-condition sleeve-condition stock) (price)])
 
                     (define/override (buy)
                       (if (> stock 0)
@@ -61,18 +63,16 @@
                      
                  (init-field RPM size)
 
-                 (augment-neural-field [(price) price-model-vinyl (RPM size)])))
+                 (augment-neural-field [(predicted-price) price-model-vinyl (RPM size) (price)])))
                  
 
 (define digital% (class product%
                    (inherit-field price)
                    (super-new [product-format "digital"])
-                   
                    (init-field
                     [file #f]
                     [file-kind #f])
-
-                   (override-neural-field [(price) price-model-digital (file-kind)])
+                    (override-neural-field [(predicted-price) price-model-digital (file-kind) (price)])
                   
                    (define/override (buy) #t)))
 
