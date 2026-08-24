@@ -36,26 +36,22 @@
 
 (define regular% (class user%
                    (super-new)
-                   (inherit-field birth-year main-genre overarching-mood relevant-albums)
+                   (inherit-field birth-year main-genre overarching-mood
+                                  relevant-albums)
+                   (define previous-possible-albums '())
                    (field [bought '()])
 
-
-                   (define/private (update-predictions! possible-albums)
-                     (let ((predicted (send recommendation-model infer main-genre bought overarching-mood birth-year  possible-albums)))
-                       (set-field! relevant-albums this (vector-ref predicted 0))))
-                 
-                   (define/private (train-albums! possible-albums)
-                     (send recommendation-model train main-genre bought overarching-mood birth-year possible-albums relevant-albums))
-
-                   (define/override (set-relevant-albums! new-relevant-albums)
-                     (super set-relevant-albums! new-relevant-albums)
-                     (train-albums! new-relevant-albums))
-
                    (define/override (get-relevant-albums possible-albums)
-                     (update-predictions! possible-albums) ;; want to infer before you return (latest)
-                     (super get-relevant-albums possible-albums))
+                     (if (equal? possible-albums previous-possible-albums)
+                         relevant-albums
+                         (let* ((predicted (send recommendation-model infer main-genre bought overarching-mood birth-year possible-albums))
+                                (predicted-albums (vector-ref predicted 0)))
+                           (set! previous-possible-albums possible-albums)
+                           (set-field! relevant-albums this predicted-albums)
+                           predicted-albums)))
 
-                   (define/public (buy-album! album)
-                     (set! bought (cons album bought)))))
+                   (define/public (buy-album! album possible-albums)
+                     (set! bought (cons album bought))
+                     (send recommendation-model train main-genre bought overarching-mood birth-year possible-albums relevant-albums))))
 
 

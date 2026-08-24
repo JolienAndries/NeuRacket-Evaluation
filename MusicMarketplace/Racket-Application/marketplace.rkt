@@ -21,11 +21,13 @@
                            (define/public (add-analogue! analogue)
                              (set! products (cons analogue products)))
 
-                         
                            (define/public (buy-product! product)
                              (if current-user
-                                 (send product buy)
+                                 (begin (send product buy)
+                                        (send current-user buy-album! (send product content) albums))
                                  (displayln "Please log in to buy a product.")))
+                           
+                           
 
                            (define/public (sell-product! product)
                              (if current-user
