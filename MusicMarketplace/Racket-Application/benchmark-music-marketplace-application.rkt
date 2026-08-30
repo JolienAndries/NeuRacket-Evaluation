@@ -78,6 +78,8 @@
        [RPM "33"]
        [size "12"]))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (define (benchmark-price-get product x)
   (for ([i x])
     (send product get-price)))
@@ -92,7 +94,7 @@
 
 (define (benchmark-recommendation-set user x album)
   (for ([i x])
-    (send user set-relevant-albums! (list album))))
+    (send user buy-album! album (get-field albums marketplace))))
 
 (define (benchmark-audio-get track x)
   (for ([i x])
@@ -103,6 +105,9 @@
 (define (benchmark-audio-set track x)
   (for ([i x])
     (send track set-instrument-genre-bpms! "guitar" "rock" 128)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (do-benchmark-x-times x times obj benchmark title)
   (displayln title)
@@ -133,4 +138,4 @@
   (do-benchmark-x-times x times track benchmark-audio-set "Audio analysis training benchmark"))
 
 (run-benchmarks 1 1)
-(run-benchmarks 10000 15)
+;;(run-benchmarks 10 15)

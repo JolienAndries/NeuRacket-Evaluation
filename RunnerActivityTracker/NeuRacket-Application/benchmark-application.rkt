@@ -49,6 +49,7 @@
   (set-field! predicting-workout2 user-race sample-workout))
 (initialize!)
 
+;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (benchmark-training-intensity-get workout x)
   (for ([i x])
@@ -80,24 +81,27 @@
   (for ([i x])
     (set-field! workout user-race sample-workout)))
 
-(define (do-benchmark-x-times x obj benchmark title)
+(define (do-benchmark-x-times x times obj benchmark title)
   (displayln title)
   (do ((i 0 (+ i 1)))
-    ((>= i x))
-    (displayln (time (benchmark obj 100000))))) ;; 5 testen / 100000 real
+    ((>= i times))
+    (displayln (time (benchmark obj x))))) ;; 5 testen / 100000 real
 
-(define (run-benchmarks times)
+;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (run-benchmarks x times)
   (displayln "Running training intensity benchmark suite...")
-  (do-benchmark-x-times times sample-workout benchmark-training-intensity-get "Training intensity inference benchmark")
-  (do-benchmark-x-times times sample-workout benchmark-training-intensity-set "Training intensity training benchmark")
+  (do-benchmark-x-times x times sample-workout benchmark-training-intensity-get "Training intensity inference benchmark")
+  (do-benchmark-x-times x times sample-workout benchmark-training-intensity-set "Training intensity training benchmark")
 
   (displayln "Running injury prediction benchmark suite...")
-  (do-benchmark-x-times times user benchmark-injury-get "Injury prediction inference benchmark")
-  (do-benchmark-x-times times user benchmark-injury-set! "Injury prediction training benchmark")
+  (do-benchmark-x-times x times user benchmark-injury-get "Injury prediction inference benchmark")
+  (do-benchmark-x-times x times user benchmark-injury-set! "Injury prediction training benchmark")
 
   (displayln "Running race time benchmark suite...")
-  (do-benchmark-x-times times user-race benchmark-racetime-get "Race time inference benchmark")
-  (do-benchmark-x-times times user-race benchmark-racetime-set! "Race time training benchmark"))
+  (do-benchmark-x-times x times user-race benchmark-racetime-get "Race time inference benchmark")
+  (do-benchmark-x-times x times user-race benchmark-racetime-set! "Race time training benchmark"))
 
-(run-benchmarks 10)
+(run-benchmarks 1 1)
+(run-benchmarks 10 15)
 
