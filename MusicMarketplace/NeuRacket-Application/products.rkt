@@ -77,3 +77,10 @@
                     [file #f]
                     [file-kind #f])
                     (override-neural-field [(predicted-price) price-model-digital (file-kind) (super)])))
+
+
+(define sales% (class product%
+                 (super-new)
+                 (inherit-field price)
+                 (init-field [target-conversion 0.1])
+                 (override-neural-field [(predicted-price) price-model-sales (target-conversion super price) (price)])))
