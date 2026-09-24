@@ -336,7 +336,6 @@
                                                         (album (send marketplace find-album (vector-ref album-title-artist 0) (vector-ref album-title-artist 1))))
                                                    (set-album-panel! album)
                                                    (set! selected-album album)
-                                                   (send (get-field current-user marketplace) set-relevant-albums! (list album)) ;; cannot use set-field!
                                                    ;; vervang picking panel door specifiek album panel
                                                    (send application-frame change-children (lambda (children) 
                                                                                              (map (lambda (child)
@@ -473,10 +472,10 @@
 (define (open-price-tab album product)
   (send selling-panel change-children
         (lambda (children)
-          (define suggested-price (send product get-price)) ;; cannot use (get-field price product)
+          (define suggested-price (send product get-predicted-price)) ;; cannot use (get-field predicted-price product)
           (define manual-price (new text-field% [label "Change price"] [parent selling-panel]))
-          (define (add-product! product)
-            (send marketplace sell-product! product) 
+          (define (add-product! product chosen-price)
+            (send marketplace sell-product! product chosen-price) 
             (send selling-pop-up show #f))
           
           (list
@@ -485,7 +484,7 @@
            (new button% [parent selling-panel]
                 [label "Accept price"]
                 [callback (lambda (b e)
-                            (add-product! product))])
+                            (add-product! product suggested-price))])
            manual-price
            (new button% [parent selling-panel]
                 [label "Sell for a custom price"]
@@ -494,7 +493,7 @@
                               (if manual-price
                                   (begin 
                                     (send product set-price! manual-price)   ;; cannot use (set-field! price product manual-price)
-                                    (add-product! product))
+                                    (add-product! product manual-price))
                                   (new message% [label "Missing Fields - Please fill in a custom price if you want to have a custom price."] [parent selling-panel]))))])))))
 
 
@@ -883,7 +882,7 @@
                                (only-show-list-panels application-frame `(,specific-artist-panel)))])
               
              ,(new message% [parent specific-product-panel] [label (string-append "Format: " (get-field product-format product))])
-             ,(new message% [parent specific-product-panel] [label (string-append "Price: €" (number->string (send product get-price)))]))
+             ,(new message% [parent specific-product-panel] [label (string-append "Price: €" (number->string (get-field price product)))]))
            ;; physical 
            (if (is-a? product physical%)
                `(,(new message% [parent specific-product-panel]

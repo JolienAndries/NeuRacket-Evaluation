@@ -2,7 +2,6 @@
 (provide marketplace)
 (require "population-values.rkt" "rec-model.rkt" racket/class)
 
-
 ;; neural-slice
 (defneuralslice (recommendation-slice user marketplace)
   [input-fields  [user main-genre] [user bought] [user overarching-mood] [user birth-year] [marketplace albums]] 
@@ -37,16 +36,14 @@
                            (define/public (buy-product! product)
                              (if current-user
                                  (begin (send product buy)
-                                        (send current-user buy-album! (send product content)))
+                                        (send current-user buy-album! (get-field content product)))
                                  (displayln "Please log in to buy a product.")))
 
-                           (define/public (sell-product! product)
+                           (define/public (sell-product! product price)
                               (if current-user
-                                 (let ((album (begin (displayln product) (get-field content product))))
-                                   (displayln album)
-                                   (displayln "---------------------------------------")
-                                                    
+                                 (let ((album (get-field content product)))
                                    ;; update marketplace catalogue and album selling-formats
+                                   (set-field! price product price)
                                    (set! products (cons product products))
                                    (set-field! selling-formats album (cons product (get-field selling-formats album))))
                                  (displayln "Please log in to sell a product.")))

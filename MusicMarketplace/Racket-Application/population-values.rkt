@@ -88,9 +88,7 @@
                                          ,(new track% [title "Blank Space"][mood "happy"] [artist taylor-swift] [release-year 2023] [file dummy-track])
                                          ,(new track% [title "Style"][mood "happy"] [artist taylor-swift] [release-year 2023] [file dummy-track]))])))
 
-(for-each (lambda (album)
-            (send taylor-swift release-album! album))
-          ts-discography)
+
 
 
 
@@ -126,9 +124,7 @@
                                [release-year 2023]
                                [tracks '()])))
 
-(for-each (lambda (album)
-            (send royal-blood release-album! album))
-          rb-discography)
+
 
 (define sum-41 (new artist%
                     [username "Sum 41"]
@@ -169,12 +165,22 @@
 
 
 
-(for-each (lambda (album)
-            (send sum-41 release-album! album))
-          sum41-discography)
+
 
 
 
 
 [define album-population (append ts-discography rb-discography sum41-discography)]
 [define artist-population `(,taylor-swift ,royal-blood ,sum-41)]
+
+(for-each (lambda (album)
+            (send taylor-swift release-album! album album-population))
+          ts-discography)
+
+(for-each (lambda (album)
+            (send royal-blood release-album! album album-population))
+          rb-discography)
+
+(for-each (lambda (album)
+            (send sum-41 release-album! album album-population))
+          sum41-discography)
