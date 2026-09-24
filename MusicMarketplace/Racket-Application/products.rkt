@@ -71,9 +71,11 @@
 
 (define product% (class object%
                    (super-new)
-                   (init-field seller content product-format [times-viewed 0] [times-sold 0])
+                   (define times-viewed 0)
+                   (define times-sold 0)
+                   (init-field seller content product-format)
                    (field [price #f])
-                   (define/public (buy) #f)
+                   (define/public (buy) (set! times-sold (+ times-sold 1)) #t)
                    (abstract set-price!)
                    (abstract get-price)))
 
@@ -85,10 +87,9 @@
 
                     (define/override (buy)
                       (if (> stock 0)
-                          (begin (set! stock (- stock 1)) #t)
+                          (begin (set! stock (- stock 1)) (super buy))
                           #f))
 
-         
                     (define/private (update-predictions!)
                       (let ((predicted (send price-model-physical infer product-format media-condition sleeve-condition stock)))
                         (set-field! price this (vector-ref predicted 0))))

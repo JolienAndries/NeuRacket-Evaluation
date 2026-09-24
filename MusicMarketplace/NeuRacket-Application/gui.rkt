@@ -427,7 +427,7 @@
                                                       [content album]
                                                       [media-condition media-cond-selection]
                                                       [sleeve-condition sleeve-cond-selection]
-                                                      [stock stock-val]
+                                                      [init-stock stock-val]
                                                       [RPM rpm-selection]
                                                       [size size-selection])))
                                     (open-price-tab album product))
@@ -462,7 +462,7 @@
                                                       [media-condition media-cond-selection]
                                                       [sleeve-condition sleeve-cond-selection]
                                                       [product-format format]
-                                                      [stock stock-val])))
+                                                      [init-stock stock-val])))
                                     (open-price-tab album product))
 
                                   (new message% [label "Missing Fields - Please fill everything in before continuing."] [parent selling-panel]))))])))))
@@ -926,8 +926,10 @@
                        [label (string-append "Media Condition: " (get-field media-condition product))])
                  ,(new message% [parent specific-product-panel]
                        [label (string-append "Sleeve Condition: " (get-field sleeve-condition product))])
-                 ,(new message% [parent specific-product-panel]
-                       [label (string-append "Stock: " (number->string (get-field stock product)))]))
+                 ;; private!! 
+                 ;;   ,(new message% [parent specific-product-panel]
+                 ;;        [label (string-append "Stock: " (number->string (get-field stock product)))])
+                 )
                '())
            ;; vinyl
            (if (is-a? product vinyl%)

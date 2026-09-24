@@ -304,8 +304,8 @@
                            (string=? producer "")
                            (not release-year)
                            (string=? description "")
-                           chosen-genre
-                           chosen-mood
+                           (not chosen-genre)
+                           (not chosen-mood)
                            (null? languages)
                            (null? tracks))
                        (new message% [parent music-left] [label "Something is missing"])

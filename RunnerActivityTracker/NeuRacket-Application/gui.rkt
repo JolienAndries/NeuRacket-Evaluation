@@ -1,7 +1,6 @@
 #lang racket
 
-(require racket/gui "gui-login-register.rkt" "gui-workout-injury.rkt" "database.rkt" "gui-race.rkt" "gui-user.rkt"
-         (only-in "neural-slices.rkt" training-intensity-slice))
+(require racket/gui "gui-login-register.rkt" "gui-workout-injury.rkt" "database.rkt" "gui-race.rkt" "gui-user.rkt")
 
 
 

@@ -37,45 +37,43 @@
 
 (define product% (class object%
                    (super-new)
-                   (init-field seller content product-format [times-viewed 0] [times-sold 0])
+                   (define times-viewed 0)
+                   (define times-sold 0)
+                   (init-field seller content product-format)
                    (label-field [price #f])
                    (abstract-neural-field [(predicted-price) (times-viewed times-sold) (price)])
-                   (define/public (buy) #f)))
+                   (define/public (view) (set! times-viewed (+ times-viewed 1)))
+                   (define/public (buy) (set! times-sold (+ times-sold 1)) #t)))
 
 (define physical% (class product%
-                    (inherit-field price product-format)
+                    (inherit-field product-format)
                     (super-new)
                     
-                    (init-field media-condition sleeve-condition [stock 0])
+                    (init-field media-condition sleeve-condition [init-stock 0])
 
-                    (override-neural-field [(predicted-price) price-model-physical (product-format media-condition sleeve-condition stock) (price)])
+                    (define current-stock init-stock)
+
+                    (override-neural-field [(predicted-price) price-model-physical (product-format media-condition sleeve-condition current-stock) (super)])
 
                     (define/override (buy)
-                      (if (> stock 0)
-                          (begin (set! stock (- stock 1)) #t)
+                      (if (> current-stock 0)
+                          (begin (set! current-stock (- current-stock 1)) (super buy))
                           #f))))
 
         
 
 (define vinyl% (class physical%
                  (super-new [product-format "vinyl"])
-                 (inherit-field price media-condition sleeve-condition stock)
+                 (inherit-field media-condition sleeve-condition)
                      
                  (init-field RPM size)
 
-                 (augment-neural-field [(predicted-price) price-model-vinyl (RPM size) (price)])))
+                 (override-neural-field [(predicted-price) price-model-vinyl (super RPM size) (super)])))
                  
 
 (define digital% (class product%
-                   (inherit-field price)
                    (super-new [product-format "digital"])
                    (init-field
                     [file #f]
                     [file-kind #f])
-                    (override-neural-field [(predicted-price) price-model-digital (file-kind) (price)])
-                  
-                   (define/override (buy) #t)))
-
-                   
-
-
+                    (override-neural-field [(predicted-price) price-model-digital (file-kind) (super)])))
