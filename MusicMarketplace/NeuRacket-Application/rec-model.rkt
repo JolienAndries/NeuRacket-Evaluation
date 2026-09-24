@@ -12,9 +12,12 @@
 (define (extract-albums albums)
   (map album->needed-fields albums))
 
+(define (extract-newest albums)
+  (list (album->needed-fields (car albums))))
+
 (defMLObject recommendation-model
   [file "../ML-components/recommendation.py"]
   [infer "infer"]
   [train "train"]
   [input user-genre (extract-albums user-bought) user-mood user-birth (extract-albums possible-albums)]
-  [label (extract-albums chosen-albums)])
+  [label (extract-newest chosen-albums)])

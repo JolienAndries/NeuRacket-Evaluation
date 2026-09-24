@@ -119,7 +119,7 @@
   (send marketplace add-artist? artist)
   (send marketplace add-regular-user? user)
   (send marketplace add-album! sample-album)
-  (send artist release-album! sample-album))
+  (send artist release-album! sample-album '()))
 
 (define (run-benchmarks x times)
   (displayln "Running price benchmark suite...")

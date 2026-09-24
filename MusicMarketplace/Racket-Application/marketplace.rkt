@@ -24,15 +24,14 @@
                            (define/public (buy-product! product)
                              (if current-user
                                  (begin (send product buy)
-                                        (send current-user buy-album! (send product content) albums))
+                                        (send current-user buy-album! (get-field content product) albums))
                                  (displayln "Please log in to buy a product.")))
-                           
-                           
 
-                           (define/public (sell-product! product)
+                           (define/public (sell-product! product price)
                              (if current-user
                                  (let ((album (get-field content product)))
                                    ;; update marketplace catalogue and album selling-formats
+                                   (send product set-price! price)
                                    (set! products (cons product products))
                                    (set-field! selling-formats album (cons product (get-field selling-formats album))))
                                  (displayln "Please log in to sell a product.")))

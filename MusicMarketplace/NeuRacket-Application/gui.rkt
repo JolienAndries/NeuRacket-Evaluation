@@ -474,8 +474,7 @@
           (define suggested-price (get-field predicted-price product)) 
           (define manual-price (new text-field% [label "Change price"] [parent selling-panel]))
           (define (add-product! product chosen-price)
-            (send marketplace sell-product! product)
-            (set-field! price product chosen-price)
+            (send marketplace sell-product! product chosen-price)
             (send selling-pop-up show #f))
           
           (list

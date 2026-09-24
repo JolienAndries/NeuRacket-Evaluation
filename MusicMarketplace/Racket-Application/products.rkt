@@ -75,12 +75,13 @@
                    (define times-sold 0)
                    (init-field seller content product-format)
                    (field [price #f])
+                   (field [predicted-price #f])
                    (define/public (buy) (set! times-sold (+ times-sold 1)) #t)
                    (abstract set-price!)
-                   (abstract get-price)))
+                   (abstract get-predicted-price)))
 
 (define physical% (class product%
-                    (inherit-field price product-format)
+                    (inherit-field predicted-price price product-format)
                     (super-new)
                     
                     (init-field  media-condition sleeve-condition [stock 0])
@@ -92,7 +93,7 @@
 
                     (define/private (update-predictions!)
                       (let ((predicted (send price-model-physical infer product-format media-condition sleeve-condition stock)))
-                        (set-field! price this (vector-ref predicted 0))))
+                        (set-field! predicted-price this (vector-ref predicted 0))))
                  
                     (define/private (train-price!)
                       (send price-model-physical train product-format media-condition sleeve-condition stock price))
@@ -100,22 +101,22 @@
                     (define/override (set-price! new-price)
                       (set-field! price this new-price)
                       (train-price!))
-
-                    (define/override (get-price)
+                    
+                    (define/override (get-predicted-price)
                       (update-predictions!) ;; want to infer before you return (latest)
-                      price)))
+                      predicted-price)))
 
 
 
 (define vinyl% (class physical%
                  (super-new [product-format "vinyl"])
-                 (inherit-field price product-format media-condition sleeve-condition stock)
+                 (inherit-field price predicted-price product-format media-condition sleeve-condition stock)
                      
                  (init-field RPM size)
 
                  (define/private (update-predictions!)
                    (let ((predicted (send price-model-vinyl infer product-format media-condition sleeve-condition stock RPM size)))
-                     (set-field! price this (vector-ref predicted 0))))
+                     (set-field! predicted-price this (vector-ref predicted 0))))
                  
                  (define/private (train-price!)
                    (send price-model-vinyl train product-format media-condition sleeve-condition stock RPM size price))
@@ -124,13 +125,13 @@
                    (set-field! price this new-price)
                    (train-price!))
 
-                 (define/override (get-price)
+                 (define/override (get-predicted-price)
                    (update-predictions!) ;; want to infer before you return (latest)
-                   price)))
+                   predicted-price)))
                  
 
 (define digital% (class product%
-                   (inherit-field price)
+                   (inherit-field price predicted-price)
                    (super-new [product-format "digital"])
                    
                    (init-field
@@ -141,7 +142,7 @@
 
                    (define/private (update-predictions!)
                      (let ((predicted (send price-model-digital infer file-kind)))
-                       (set-field! price this (vector-ref predicted 0))))
+                       (set-field! predicted-price this (vector-ref predicted 0))))
                  
                    (define/private (train-price!)
                      (send price-model-digital train file-kind price))
@@ -150,6 +151,7 @@
                      (set-field! price this new-price)
                      (train-price!))
 
-                   (define/override (get-price)
+                   (define/override (get-predicted-price)
                      (update-predictions!) ;; want to infer before you return (latest)
-                     price)))
+                     predicted-price)))
+
