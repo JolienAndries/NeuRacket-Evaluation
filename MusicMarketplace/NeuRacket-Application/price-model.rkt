@@ -22,3 +22,12 @@
   [train "train_physical"]
   [input product-format media-condition sleeve-condition stock]
   [label price])
+
+
+
+(defMLObject price-model-sales
+  [file "../ML-components/sales.py"]
+  [infer "infer_sales"]
+  [train "train_sales"]
+  [input target-conversion times-viewed times-sold old-price]
+  [label price])

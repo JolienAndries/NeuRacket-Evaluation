@@ -40,13 +40,19 @@
                                  (displayln "Please log in to buy a product.")))
 
                            (define/public (sell-product! product price)
-                              (if current-user
+                             (if current-user
                                  (let ((album (get-field content product)))
                                    ;; update marketplace catalogue and album selling-formats
                                    (set-field! price product price)
                                    (set! products (cons product products))
                                    (set-field! selling-formats album (cons product (get-field selling-formats album))))
                                  (displayln "Please log in to sell a product.")))
+
+                           (define/public (new-sale! sale)
+                             (let ((init-product (get-field product sale))
+                                   (price (get-field price sale)))
+                               (set-field! price init-product price)
+                               (set-field! on-sale? init-product sale)))
 
                            (define (find-user username)
                              (member username (append regular-users artists) (lambda (usr-n regular)
