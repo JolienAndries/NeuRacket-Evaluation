@@ -8,8 +8,8 @@
                             [races-run '()]
                             [upcoming-races '()]
                             [workouts '()])
-                (field [injuries '()]
-                       [injury-risk? #f])
+                (label-field [injuries '()])
+                (neural-field [(injury-risk?) injury-prediction-model (birthday weight height injuries workouts) (injuries)])
 
                 (define password #f)
                 (define birthday #f)
