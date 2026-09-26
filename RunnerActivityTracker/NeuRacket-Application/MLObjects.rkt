@@ -1,7 +1,7 @@
 #lang racket
 
 (require mlobject (only-in racket/date current-date date->seconds))
-(provide injury-prediction-model racetime-model training-intensity-model)
+(provide injury-prediction-model racetime-model)
 
 
 
@@ -89,12 +89,3 @@
   [label (get-duration workout)]
   [guard (and race1 race2)]
   [output predicted-marathon-time])
-
-(defMLObject training-intensity-model
-  [file "../ML-components/training_intensity/training-intensity.py"]
-  [infer "predict_training_intensity"]
-  [train "train_training_intensity"]
-  [input elevation-difference (seconds->minutes duration) distance (calc-speed duration distance) (calc-age bday)
-         weight length (calc-avg-elevation-diff workouts) (calc-avg-duration workouts) (calc-avg-distance workouts)
-         (calc-avg-speed workouts)]
-  [label training-intensity])

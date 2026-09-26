@@ -79,12 +79,15 @@
          [label "Register"]
          [callback
           (lambda (btn evt)
-            (register (new user% [name (send name-field get-value)]
-                           [password (send password-field get-value)]
-                           [birthday (send birthday get-value)]
-                           [sex (send sex get-value)]
-                           [height (send height get-value)]
-                           [weight (send weight get-value)])))])
+            (let ((user (new user%
+                             [name (send name-field get-value)]
+                             [sex (send sex get-value)])))
+              (send user add-personal-information!
+                    (send password-field get-value)
+                    (send birthday get-value)
+                    (send weight get-value)
+                    (send height get-value))           
+              (register user)))])
 
 
     register-panel))
