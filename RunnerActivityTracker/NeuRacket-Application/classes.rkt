@@ -1,19 +1,33 @@
 #lang racket
 
-(require (only-in "MLObjects.rkt" injury-prediction-model) (only-in "neural-slices.rkt" marathon-time-prediction-slice training-intensity-slice))
+(require (only-in "MLObjects.rkt" injury-prediction-model) (only-in "neural-slices.rkt" marathon-time-prediction-slice))
 (provide user% race% injury% user-race%)
 
 (define user% (class object%
-                (init-field name password birthday sex weight height
+                (init-field name sex
                             [races-run '()]
                             [upcoming-races '()]
                             [workouts '()])
-                (label-field [injuries '()])
-                (neural-field [(injury-risk?) injury-prediction-model (birthday weight height injuries workouts) (injuries)])
+                (field [injuries '()]
+                       [injury-risk? #f])
+
+                (define password #f)
+                (define birthday #f)
+                (define weight #f)
+                (define height #f)
+
+                (define/public (add-personal-information! new-password new-birthday new-weight new-height)
+                  (set! password new-password)
+                  (set! birthday new-birthday)
+                  (set! weight new-weight)
+                  (set! height new-height))
+
+                (define/public (correct-password? other-password)
+                  (equal? other-password password))
+                
                 
                 (define/public (add-workout! workout)
-                  (set! workouts (cons workout workouts))
-                  (new-neural-slice training-intensity-slice workout this))
+                  (set! workouts (cons workout workouts)))
 
                 (define/public (registered-race race)
                   (define (same-race? r1 ur2)
@@ -53,7 +67,7 @@
                      (label-field [workout #f])
                      (external-neural-field time-prediction)
                      (define/public (assoc-workout! new-workout)
-                      (set-field! workout this new-workout))
+                       (set-field! workout this new-workout))
                      (super-new)))
 
 (define race% (class object%

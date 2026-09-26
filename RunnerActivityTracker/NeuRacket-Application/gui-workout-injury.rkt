@@ -18,7 +18,6 @@
     top))
 
 
-
 (define (view-workouts-panel parent workouts)
   (view-panel parent
               (lambda (workout) (date->string (get-field start-date workout)))
@@ -55,10 +54,7 @@
          [label "maximum elevation"]
          [value (number->string  (get-field max-elevation workout))])
 
-    (define training-intensity (new message% [parent info]
-                                    [label (string-append "the training intensity based on your data is: "
-                                                          (number->string (get-field training-intensity workout))
-                                                          "/10")]))
+    
 
     (define intensity (new slider%
                            [label "perceived intensity"]

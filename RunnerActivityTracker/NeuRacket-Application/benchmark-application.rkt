@@ -51,13 +51,13 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (benchmark-training-intensity-get workout x)
-  (for ([i x])
-    (get-field training-intensity workout)))
+;(define (benchmark-training-intensity-get workout x)
+;  (for ([i x])
+;    (get-field training-intensity workout)))
 
-(define (benchmark-training-intensity-set workout x)
-  (for ([i x])
-    (set-field! perceived-intensity workout 7)))
+;(define (benchmark-training-intensity-set workout x)
+;  (for ([i x])
+;    (set-field! perceived-intensity workout 7)))
 
 (define (benchmark-injury-get user x)
   (for ([i x])
@@ -90,9 +90,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (run-benchmarks x times)
-  (displayln "Running training intensity benchmark suite...")
-  (do-benchmark-x-times x times sample-workout benchmark-training-intensity-get "Training intensity inference benchmark")
-  (do-benchmark-x-times x times sample-workout benchmark-training-intensity-set "Training intensity training benchmark")
+  ;(displayln "Running training intensity benchmark suite...")
+  ;(do-benchmark-x-times x times sample-workout benchmark-training-intensity-get "Training intensity inference benchmark")
+  ;(do-benchmark-x-times x times sample-workout benchmark-training-intensity-set "Training intensity training benchmark")
 
   (displayln "Running injury prediction benchmark suite...")
   (do-benchmark-x-times x times user benchmark-injury-get "Injury prediction inference benchmark")

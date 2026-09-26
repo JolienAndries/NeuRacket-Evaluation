@@ -1,6 +1,6 @@
 #lang racket
 
-(require racket/gui "gui-login-register.rkt" "gui-workout-injury.rkt" "database.rkt" "gui-race.rkt" "gui-user.rkt")
+(require racket/gui "gui-login-register.rkt" "gui-workout-injury.rkt" "database.rkt" "gui-race.rkt")
 
 
 
@@ -23,7 +23,7 @@
                      (new menu-item% [label "add workout"]
                           [parent workout]
                           [callback (lambda (mnu evt) (swap-panel-to (add-workout-panel main (lambda (workout)
-                                                                                                (send user add-workout! workout)) user)))])
+                                                                                               (send user add-workout! workout)) user)))])
                      (new menu-item% [label "view workouts"]
                           [parent workout]
                           [callback (lambda (mnu evt) (swap-panel-to (view-workouts-panel main (get-field workouts user) user)))])
@@ -42,10 +42,7 @@
                           [parent injuries]
                           [callback (lambda (mnu evt) (swap-panel-to (view-injuries-panel main (get-field injuries user))))])
     
-                     ;; profile
-                     (new menu-item% [label "view profile"]
-                          [parent profile]
-                          [callback (lambda (mnu evt) (swap-panel-to (profile-panel main user)))])
+                    
                      (new menu-item% [label "home"]
                           [parent profile]
                           [callback (lambda (mnu evt) (swap-panel-to (main-page main user)))])
@@ -98,7 +95,7 @@
 ;;;
 (define (login-user username password)
   (let ((user (send database get-user username)))
-    (when (and user (string=? password (get-field password user)))
+    (when (and user (send user correct-password? password))
       (swap-panel-to (main-page main user))
       (send main-menu login user))))
 

@@ -130,8 +130,7 @@
                           [duration (time-diff-s start-date end-date)]
                           [elevation-difference (-  max-elevation  min-elevation)]
                           [distance (route->distance route)])
-                   (label-field [perceived-intensity 0])
-                   (external-neural-field training-intensity)
+                   (field [perceived-intensity 0])
                    
 
                    (define/public (assoc-injury! injury)

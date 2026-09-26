@@ -2,7 +2,7 @@
 
 (provide database)
 (require racket/class)
-(require (only-in "classes.rkt" user% user-race% race% injury%) (only-in "workout.rkt" parse-gpx) (only-in "neural-slices.rkt" training-intensity-slice))
+(require (only-in "classes.rkt" user% user-race% race% injury%) (only-in "workout.rkt" parse-gpx))
 
 (define database% (class object%
                     (super-new)
@@ -28,16 +28,14 @@
 (define database (new database%))
 
 (define (fill-database!)
-  (displayln "OOOOOOOOOOOOOO")
   (let* ((20bxl (parse-gpx "../../../gpx-workouts/20km_door_Brussel_Strava_Export.gpx"))
          (S2R5.2 (parse-gpx "../../../gpx-workouts/S2R_W5S2.gpx"))
          (S2R5.3 (parse-gpx "../../../gpx-workouts/S2R_W5S3.gpx"))
          (brussels-20k (new race% [name "Brussels 20K"] [place "Brussels"] [date (make-date 0 0 0 12 05 2024 0 0 #f 0)] [distance 20] [elevation-difference 150]))
          (amsterdam-marathon (new race% [name "Amsterdam Marathon"] [place "Amsterdam"] [date (make-date 0 0 0 06 10 2026 0 0 #f 0)] [distance 42.195] [elevation-difference 120]))
          (vienna-marathon (new race% [name "Vienna Marathon"] [place "Vienna"] [date (make-date 0 0 0 20 04 2027 0 0 #f 0)] [distance 42.195] [elevation-difference 85]))
-         (jolien (new user% [name "Jolien"] [password "TS"] [birthday (make-date 0 0 0 29 01 2003 0 0 #f 0)] [sex "V"] [weight 55] [height 173]
-                      [workouts (list S2R5.2 S2R5.3)]))
-         (evi (new user% [name "Evi"] [password "PT"] [birthday (make-date 0 0 0 17 10 2006 0 0 #f 0)] [sex "V"] [weight 50] [height 170] [workouts (list 20bxl)]))
+         (jolien (new user% [name "Jolien"]  [sex "V"] [workouts (list S2R5.2 S2R5.3)]))
+         (evi (new user% [name "Evi"] [sex "V"]  [workouts (list 20bxl)]))
          (evi-brussels-race (new user-race% [race brussels-20k]))
          (jolien-amsterdam-race (new user-race% [race amsterdam-marathon]))
          (evi-injury (new injury% [when (make-date 0 0 0 01 05 2024 0 0 #f 0)]
@@ -51,31 +49,26 @@
                              [body-part "leg"]
                              [recovered? #f])))
     
+    (send evi add-personal-information! "PT"  (make-date 0 0 0 17 10 2006 0 0 #f 0) 50 170)
+    (send jolien add-personal-information!  "TS"  (make-date 0 0 0 29 01 2003 0 0 #f 0)  55  173)
     (set-field! users database (list (cons (get-field name jolien) jolien)
                                      (cons (get-field name evi) evi)))
     
-    (new-neural-slice training-intensity-slice 20bxl evi)
-    (new-neural-slice training-intensity-slice S2R5.2 jolien)
-    (new-neural-slice training-intensity-slice S2R5.3 jolien)
+   
     
     (send evi add-injury! evi-injury)
     (send jolien add-injury! jolien-injury)
     (set-field! races database (list (cons (get-field name brussels-20k) brussels-20k)
                                      (cons (get-field name amsterdam-marathon) amsterdam-marathon)
                                      (cons (get-field name vienna-marathon) vienna-marathon)))
-    (display "C")
+    
     (send brussels-20k register evi)
-    (display "B")
+    
     (send evi register evi-brussels-race)
-    (display "A")
-    (send evi-brussels-race assoc-workout! 20bxl)
-    (displayln "D")
+    (send evi-brussels-race assoc-workout! 20bxl)    
     (send evi race-run! evi-brussels-race)
-    (displayln "E")
     (send amsterdam-marathon register jolien)
     (send jolien register jolien-amsterdam-race)))
 
 
 (fill-database!)
-
-(displayln "dit zegt dus niks")

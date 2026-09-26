@@ -1,8 +1,7 @@
 #lang racket/base
 
 (provide parse-gpx workout%)
-(require (only-in "MLObjects.rkt" training-intensity-model)
-         euclid/plane/angle racket/class racket/match racket/date (only-in racket/list last first) (only-in xml read-xml xml->xexpr document-element))
+(require euclid/plane/angle racket/class racket/match racket/date (only-in racket/list last first) (only-in xml read-xml xml->xexpr document-element))
 
 (define (extract-date str) ;; yyyy-mm-ddThh:mm:ssZ
   (let ((second (string->number (substring str 17 19)))
@@ -131,19 +130,7 @@
                           [duration (time-diff-s start-date end-date)]
                           [elevation-difference (-  max-elevation  min-elevation)]
                           [distance (route->distance route)]
-                          [training-intensity #f])
-
-                   (define/public (get-training-intensity user)
-                     (let ((res (send training-intensity-model infer elevation-difference duration distance
-                                      (get-field birthday user) (get-field weight user) (get-field height user) (get-field workouts user))))
-                       (set! training-intensity res)
-                       res))
-                   
-                   (define/public (set-training-intensity! new-intensity user)
-                     (set! training-intensity new-intensity)
-                     (send training-intensity-model train training-intensity elevation-difference duration distance
-                           (get-field birthday user) (get-field weight user) (get-field height user) (get-field workouts user)))
-                   
+                          [perceived-intensity 0])
 
                    (define/public (assoc-injury! injury)
                      (set! injuries (cons injury injuries)))))

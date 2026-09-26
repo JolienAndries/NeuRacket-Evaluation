@@ -4,12 +4,26 @@
 (provide user% race% injury% user-race%)
 
 (define user% (class object%
-                (init-field name password birthday sex weight height
+                (init-field name sex
                             [races-run '()]
                             [upcoming-races '()]
                             [injuries '()]
                             [workouts '()]
-                            [injury-risk? (send injury-prediction-model infer birthday weight height injuries workouts)])
+                            [injury-risk? #f])
+
+                (define password #f)
+                (define birthday #f)
+                (define weight #f)
+                (define height #f)
+
+                (define/public (add-personal-information! new-password new-birthday new-weight new-height)
+                  (set! password new-password)
+                  (set! birthday new-birthday)
+                  (set! weight new-weight)
+                  (set! height new-height))
+
+                (define/public (correct-password? other-password)
+                  (equal? other-password password))
                
                 (define/public (get-injury-risk?)
                   (let ((res (send injury-prediction-model infer birthday weight height injuries workouts)))
