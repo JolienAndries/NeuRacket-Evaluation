@@ -44,3 +44,12 @@
                                       (apply python-train (map convert-scheme-value (list price format media-condition sleeve-condition stock))))
                                     (define/public (infer format media-condition sleeve-condition stock)
                                       (vector-map convert-python-value   (pytuple->vector  (apply python-infer (map convert-scheme-value (list format media-condition sleeve-condition stock)))))))))
+
+(define price-model-sales (new (class object% (super-new)
+                                    (run* "with open('../ML-components/sales.py') as file: exec(file.read())")
+                                    (define python-train (run "train_sales"))
+                                    (define python-infer (run "infer_sales"))
+                                    (define/public (train target-conversion times-viewed times-sold old-price price)
+                                      (apply python-train (map convert-scheme-value (list target-conversion times-viewed times-sold old-price price))))
+                                    (define/public (infer target-conversion times-viewed times-sold old-price)
+                                      (convert-python-value (apply python-infer (map convert-scheme-value (list target-conversion times-viewed times-sold old-price))))))))

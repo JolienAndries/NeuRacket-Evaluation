@@ -863,6 +863,55 @@
 
 (define specific-product-panel (new vertical-panel% [parent application-frame]))
 
+(define sales-pop-up (new dialog% [label "Put Product On Sale"] [parent application-frame]))
+(define sales-panel (new vertical-panel% [parent sales-pop-up]))
+
+
+(define (sale-chosen sale price)
+  (send sale set-price! price)
+  (send marketplace new-sale! sale)
+  (send sales-pop-up show #f))
+
+(define (sale-suggestion target-conversion product)
+  (let ((sale (new sales% 
+                   [product product]
+                   [target-conversion target-conversion])))
+    (let ((suggestion (send sale get-predicted-price))
+          (old-price (get-field price product)))
+      (let ((chosen-price-fld (new text-field% [parent sales-panel]
+                                   [label "New Price: "]
+                                   [init-value (number->string suggestion)])))
+ 
+        (send sales-panel change-children
+              (lambda (children)
+                (list  (new message% [parent sales-panel]
+                            [label (string-append "The old price was €"
+                                                  (number->string old-price)
+                                                  ", we suggest €"
+                                                  (number->string suggestion))])
+                       (new button% [parent sales-panel]
+                            [label "Accept suggestion"]
+                            [callback (lambda (btn evt)
+                                        (sale-chosen sale suggestion))])
+                       chosen-price-fld
+                       (new button% [parent sales-panel]
+                            [label "Choose new price"]
+                            [callback (lambda (btn evt)
+                                        (sale-chosen sale (string->number (send chosen-price-fld get-value))))]))))))))
+                                             
+(define (ask-target-conversion product)
+  (define target-rate (new text-field%
+                           [label "Target Conversion Rate (0-1)"]
+                           [init-value "0.05"]
+                           [parent sales-panel]))
+  (send sales-panel change-children
+        (lambda (children)
+          `(,target-rate
+            ,(new button%  [parent sales-panel]
+                  [label "Calculate Best Price"]
+                  [callback (lambda (btn evt)
+                              (sale-suggestion (string->number (send target-rate get-value)) product))])))))
+
 (define (show-product-page product)
   (define maybe-no-play (new message% [label ""] [parent specific-product-panel]))
   (define buy-button-msg (new message% [label "Not Yet Bought"] [min-width 300] [parent specific-product-panel]))
@@ -883,6 +932,7 @@
               
              ,(new message% [parent specific-product-panel] [label (string-append "Format: " (get-field product-format product))])
              ,(new message% [parent specific-product-panel] [label (string-append "Price: €" (number->string (get-field price product)))]))
+           (if (get-field on-sale? product) (list (new message% [parent specific-product-panel] [label "SALE!!!"]))  '())
            ;; physical 
            (if (is-a? product physical%)
                `(,(new message% [parent specific-product-panel]
@@ -917,7 +967,15 @@
                                   (if (send product buy)
                                       (send buy-button-msg set-label "Purchase successful!")
                                       (send buy-button-msg set-label "Could not buy")))])
-                 buy-button-msg))))
+                 buy-button-msg)
+           (if (equal? (get-field current-user marketplace) (get-field seller product))
+               `(,(new button%
+                       [label "Put On Sale"]
+                       [parent specific-product-panel]
+                       [callback (lambda (btn evt)
+                                   (ask-target-conversion product)
+                                   (send sales-pop-up show #t))]))
+               '()))))
 
   (only-show-list-panels application-frame `(,specific-product-panel)))
 

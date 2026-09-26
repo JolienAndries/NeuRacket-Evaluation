@@ -36,6 +36,12 @@
                                    (set-field! selling-formats album (cons product (get-field selling-formats album))))
                                  (displayln "Please log in to sell a product.")))
 
+                           (define/public (new-sale! sale)
+                             (let ((init-product (get-field product sale))
+                                   (price (get-field price sale)))
+                               (send init-product set-price! price)
+                               (set-field! on-sale? init-product sale)))
+
                            (define (get-user username)
                              (member username (append regular-users artists) (lambda (usr-n regular)
                                                                                (equal? usr-n (get-field username regular)))))

@@ -1,7 +1,7 @@
 #lang racket/base
 (require racket/class "audio-model.rkt" "price-model.rkt")
 
-(provide album% physical% product% track% digital% vinyl%)
+(provide album% physical% product% track% digital% vinyl% sales%)
 
 
 
@@ -71,11 +71,13 @@
 
 (define product% (class object%
                    (super-new)
-                   (define times-viewed 0)
-                   (define times-sold 0)
+                   (field [times-viewed 0]
+                          [times-sold 0]
+                          [on-sale? #f])
                    (init-field seller content product-format)
                    (field [price #f])
                    (field [predicted-price #f])
+                   (define/public (view) (set! times-viewed (+ times-viewed 1)))
                    (define/public (buy) (set! times-sold (+ times-sold 1)) #t)
                    (abstract set-price!)
                    (abstract get-predicted-price)))
@@ -155,3 +157,28 @@
                      (update-predictions!) ;; want to infer before you return (latest)
                      predicted-price)))
 
+
+(define sales% (class object%
+                 (super-new)
+                 (init-field product [target-conversion 0.1])
+                 (field [price #f] [predicted-price #f])
+                 (define old-price (get-field price product))
+
+                 (define/public (sales-done!)
+                   (send product set-price old-price)
+                   (set-field! on-sale? product #f))
+
+                 (define/private (update-predictions!)
+                     (let ((predicted (send price-model-sales infer target-conversion (get-field times-viewed product) (get-field times-sold product) (get-field price product))))
+                       (set-field! predicted-price this predicted)))
+
+                (define/public (get-predicted-price)
+                     (update-predictions!) ;; want to infer before you return (latest)
+                     predicted-price)
+
+                 (define/private (train-price!)
+                     (send price-model-sales train target-conversion (get-field times-viewed product) (get-field times-sold product) (get-field price product) price))
+
+                 (define/public (set-price! new-price)
+                     (set-field! price this new-price)
+                     (train-price!))))
