@@ -28,6 +28,8 @@ def get_highest_score_label(predictions):
     return highest['label']
 
 
+HF_TOKEN = os.getenv("HF_TOKEN")
+
 def infer(file_path):
     # general 
     # https://huggingface.co/dima806/music_genres_classification
@@ -36,12 +38,12 @@ def infer(file_path):
     audio = transform_audio(audio).numpy().reshape(-1)[:MAX_LENGTH]
 
     # https://huggingface.co/dima806/music_genres_classification
-    pipe_genre = pipeline("audio-classification", model="dima806/music_genres_classification")
+    pipe_genre = pipeline("audio-classification", model="dima806/music_genres_classification", token=HF_TOKEN)
     genre = pipe_genre(audio)
     genre = get_highest_score_label(genre)
 
     # https://huggingface.co/dima806/musical_instrument_detection
-    pipe_instrument = pipeline("audio-classification", model="dima806/musical_instrument_detection")
+    pipe_instrument = pipeline("audio-classification", model="dima806/musical_instrument_detection", token=HF_TOKEN)
     instrument = pipe_instrument(audio)
     instrument = get_highest_score_label(instrument)
 
