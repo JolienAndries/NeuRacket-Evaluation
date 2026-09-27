@@ -54,16 +54,14 @@
     (set-field! users database (list (cons (get-field name jolien) jolien)
                                      (cons (get-field name evi) evi)))
     
-   
-    
     (send evi add-injury! evi-injury)
     (send jolien add-injury! jolien-injury)
+
     (set-field! races database (list (cons (get-field name brussels-20k) brussels-20k)
                                      (cons (get-field name amsterdam-marathon) amsterdam-marathon)
                                      (cons (get-field name vienna-marathon) vienna-marathon)))
-    
+
     (send brussels-20k register evi)
-    
     (send evi register evi-brussels-race)
     (send evi-brussels-race assoc-workout! 20bxl)    
     (send evi race-run! evi-brussels-race)

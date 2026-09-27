@@ -27,7 +27,7 @@
                 
                 
                 (define/public (add-workout! workout)
-                  (set! workouts (cons workout workouts)))
+                  (set-field! workouts this (cons workout workouts)))
 
                 (define/public (registered-race race)
                   (define (same-race? r1 ur2)
@@ -38,18 +38,18 @@
                     (if race-found? (car race-found?) race-found?)))
                 
                 (define/public (add-injury! injury)
-                  (set! injuries (cons injury injuries)))
+                  (set-field! injuries this (cons injury (get-field injuries this))))
                 
                 (define/public (race-run! race)
-                  (set! upcoming-races (remove race upcoming-races))
-                  (set! races-run (cons race races-run)))
+                  (set-field! upcoming-races this (remove race upcoming-races))
+                  (set-field! races-run this (cons race races-run)))
 
                 (define/public (register race)
                   (new-neural-slice marathon-time-prediction-slice this race)
-                  (set! upcoming-races (cons race upcoming-races)))
+                  (set-field! upcoming-races this (cons race upcoming-races)))
 
                 (define/public (deregister race)
-                  (set! upcoming-races (remove race upcoming-races)))
+                  (set-field! upcoming-races this (remove race upcoming-races)))
               
                 (super-new)))
 
