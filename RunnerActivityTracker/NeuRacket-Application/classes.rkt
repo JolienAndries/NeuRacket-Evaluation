@@ -1,6 +1,6 @@
 #lang racket
 
-(require (only-in "MLObjects.rkt" injury-prediction-model) (only-in "neural-slices.rkt" marathon-time-prediction-slice))
+(require (only-in "MLObjects.rkt" injury-prediction-model) (only-in "neural-slices.rkt" marathon-time-prediction-slice training-intensity-slice))
 (provide user% race% injury% user-race%)
 
 (define user% (class object%
@@ -27,7 +27,8 @@
                 
                 
                 (define/public (add-workout! workout)
-                  (set! workouts (cons workout workouts)))
+                  (set! workouts (cons workout workouts))
+                  (new-neural-slice training-intensity-slice workout this))
 
                 (define/public (registered-race race)
                   (define (same-race? r1 ur2)

@@ -1,7 +1,7 @@
 #lang racket/base
 
 (provide parse-gpx workout%)
-(require 
+(require (only-in "MLObjects.rkt" training-intensity-model)
   euclid/plane/angle racket/class racket/match racket/date (only-in racket/list last first) (only-in xml read-xml xml->xexpr document-element))
 
 (define (extract-date str) ;; yyyy-mm-ddThh:mm:ssZ
@@ -130,7 +130,8 @@
                           [duration (time-diff-s start-date end-date)]
                           [elevation-difference (-  max-elevation  min-elevation)]
                           [distance (route->distance route)])
-                   (field [perceived-intensity 0])
+                   (label-field [perceived-intensity 0])
+                   (external-neural-field training-intensity)
                    
 
                    (define/public (assoc-injury! injury)

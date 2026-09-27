@@ -1,7 +1,7 @@
 #lang racket
 
-(require (only-in "MLObjects.rkt" racetime-model))
-(provide marathon-time-prediction-slice)
+(require (only-in "MLObjects.rkt" racetime-model training-intensity-model))
+(provide marathon-time-prediction-slice training-intensity-slice)
 
   
 
@@ -12,3 +12,11 @@
   [label-fields [marathon-prediction workout]]
   [target-fields [marathon-prediction time-prediction]]
   [MLObject racetime-model])
+
+
+(defneuralslice (training-intensity-slice workout user)
+  [input-fields  [workout elevation-difference] [workout duration] [workout distance]
+                 [user birthday] [user weight] [user height] [user workouts]]
+  [label-fields  [workout perceived-intensity]]
+  [target-fields [workout training-intensity]]
+  [MLObject training-intensity-model])

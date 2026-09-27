@@ -2,7 +2,8 @@
 
 (provide database)
 (require racket/class)
-(require (only-in "classes.rkt" user% user-race% race% injury%) (only-in "workout.rkt" parse-gpx))
+(require (only-in "classes.rkt" user% user-race% race% injury%) (only-in "workout.rkt" parse-gpx)
+         (only-in "neural-slices.rkt" training-intensity-slice))
 
 (define database% (class object%
                     (super-new)
@@ -54,7 +55,9 @@
     (set-field! users database (list (cons (get-field name jolien) jolien)
                                      (cons (get-field name evi) evi)))
     
-   
+    (new-neural-slice training-intensity-slice 20bxl evi)
+    (new-neural-slice training-intensity-slice S2R5.2 jolien)
+    (new-neural-slice training-intensity-slice S2R5.3 jolien)
     
     (send evi add-injury! evi-injury)
     (send jolien add-injury! jolien-injury)

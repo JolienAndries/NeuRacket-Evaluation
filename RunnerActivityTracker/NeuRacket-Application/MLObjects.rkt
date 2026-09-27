@@ -1,7 +1,7 @@
 #lang racket
 
 (require mlobject (only-in racket/date current-date date->seconds))
-(provide injury-prediction-model racetime-model)
+(provide injury-prediction-model racetime-model training-intensity-model)
 
 
 
@@ -49,6 +49,27 @@
       0
       1))
   
+(define (seconds->minutes duration)
+  (exact->inexact (/ duration 60)))
+
+(define (calc-avg-elevation-diff workouts) (calc-avg-field (lambda (workout) (get-field elevation-difference workout)) workouts))
+(define (calc-avg-duration workouts) (calc-avg-field (lambda (workout) (get-field duration workout)) workouts))
+(define (calc-avg-distance workouts) (calc-avg-field (lambda (workout) (get-field distance workout)) workouts))
+(define (calc-avg-speed workouts) (calc-avg-field (lambda (workout) (calc-speed (get-field duration workout) (get-field distance workout))) workouts))
+  
+(define (calc-avg-field field-getter workouts)
+  (let ((ctr-sum (foldl (lambda (workout acc)
+                          (let ((ctr (car acc))
+                                (sum (cdr acc)))
+                            (cons (+ ctr 1)
+                                  (+ (field-getter workout) sum))))
+                        (cons 0 0)
+                        workouts)))
+
+    (exact->inexact (/ (cdr ctr-sum) (car ctr-sum)))))
+
+(define (calc-speed duration distance) ;; km/h
+  (exact->inexact (/ distance (/ duration 3600))))
 
 (defMLObject injury-prediction-model
   [file "../ML-components/injury_prediction/injury-model.py"]
@@ -66,3 +87,12 @@
   [label (get-duration workout)]
   [guard (and race1 race2)]
   [output predicted-marathon-time])
+
+(defMLObject training-intensity-model
+  [file "../ML-components/training_intensity/training-intensity.py"]
+  [infer "predict_training_intensity"]
+  [train "train_training_intensity"]
+  [input elevation-difference (seconds->minutes duration) distance (calc-speed duration distance) (calc-age bday)
+         weight length (calc-avg-elevation-diff workouts) (calc-avg-duration workouts) (calc-avg-distance workouts)
+         (calc-avg-speed workouts)]
+  [label training-intensity])
