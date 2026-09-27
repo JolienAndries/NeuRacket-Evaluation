@@ -1,7 +1,7 @@
 #lang racket
 
 (require (only-in racket/date current-date date->seconds))
-(provide injury-prediction-model racetime-model)
+(provide injury-prediction-model racetime-model training-intensity-model)
 ;; initialise pyffi
 (require pyffi)
 (initialize)
@@ -87,3 +87,41 @@
 
 
 
+(define training-intensity-model (new (class object%
+                                        (super-new)
+                                        (run* "with open('../ML-components/training_intensity/training-intensity.py') as file: exec(file.read())")
+                                        (define python-train (run "train_training_intensity"))
+                                        (define python-infer (run "predict_training_intensity"))
+
+                                      
+                                        (define/public (train training-intensity elevation-difference duration distance bday weight length workouts)
+                                          (apply python-train (map racket->python (list training-intensity elevation-difference (seconds->minutes duration)
+                                                                                        distance (calc-speed duration distance) (calc-age bday)
+                                                                                        weight length (calc-avg-elevation-diff workouts)
+                                                                                        (calc-avg-duration workouts) (calc-avg-distance workouts) (calc-avg-speed workouts)))))
+
+                                        (define/public (infer elevation-difference duration distance bday weight length workouts)
+                                          (python->racket (apply python-infer (map racket->python (list elevation-difference (seconds->minutes duration)
+                                                                                                        distance (calc-speed duration distance) (calc-age bday)
+                                                                                                        weight length (calc-avg-elevation-diff workouts)
+                                                                                                        (calc-avg-duration workouts) (calc-avg-distance workouts) (calc-avg-speed workouts))))))
+                                        (define (seconds->minutes duration)
+                                          (exact->inexact (/ duration 60)))
+                                        (define (calc-speed duration distance) ;; km/h
+                                          (exact->inexact (/ distance (/ duration 3600))))
+
+                                        (define (calc-avg-elevation-diff workouts) (calc-avg-field (lambda (workout) (get-field elevation-difference workout)) workouts))
+                                        (define (calc-avg-duration workouts) (calc-avg-field (lambda (workout) (get-field duration workout)) workouts))
+                                        (define (calc-avg-distance workouts) (calc-avg-field (lambda (workout) (get-field distance workout)) workouts))
+                                        (define (calc-avg-speed workouts) (calc-avg-field (lambda (workout) (calc-speed (get-field duration workout) (get-field distance workout))) workouts))
+  
+                                        (define (calc-avg-field field-getter workouts)
+                                          (let ((ctr-sum (foldl (lambda (workout acc)
+                                                                  (let ((ctr (car acc))
+                                                                        (sum (cdr acc)))
+                                                                    (cons (+ ctr 1)
+                                                                          (+ (field-getter workout) sum))))
+                                                                (cons 0 0)
+                                                                workouts)))
+
+                                            (exact->inexact (/ (cdr ctr-sum) (car ctr-sum))))))))

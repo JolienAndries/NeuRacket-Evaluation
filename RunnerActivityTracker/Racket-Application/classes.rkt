@@ -12,9 +12,9 @@
                             [injury-risk? #f])
 
                 (define password #f)
-                (define birthday #f)
-                (define weight #f)
-                (define height #f)
+                (field [birthday #f]
+                       [weight #f]
+                       [height #f])
 
                 (define/public (add-personal-information! new-password new-birthday new-weight new-height)
                   (set! password new-password)

@@ -55,6 +55,9 @@
          [label "maximum elevation"]
          [value (number->string  (get-field max-elevation workout))])
 
+    (define training-intensity (new message% [parent info]
+                                    [label (string-append "the training intensity based on your data is: " (number->string (send workout get-training-intensity user)) "/10")]))
+
     (define intensity (new slider% [label "perceived intensity"]
                            [min-value 0]
                            [max-value 10]
@@ -62,7 +65,7 @@
                            [callback
                             (lambda (s e)
                               (let ((perceived-intensity (send s get-value)))
-                                (set-field! perceived-intensity workout perceived-intensity)))]))
+                                (send workout set-perceived-training-intensity! perceived-intensity user)))]))
     
     (send intensity set-value (get-field perceived-intensity workout))   
 
