@@ -2,8 +2,13 @@
 
 These are the evaluation scenarios for the programming language [NeuRacket](https://github.com/JolienAndries/NeuRacket) (an extension of Racket). 
 
+## The branches 
+- The `label-field` branch are the standard implementations for the driver scenarios, on which the LOC counting happened. 
+- The `training-intensity` branch is the extension scenario for adding training intensity to the runner activity tracker
+- the `on-sale-product` branch is the extension scenario for putting a product on sale in the music marketplace
+
 ## How to use
-The `label-field` branch are the standard implementations for the driver scenarios, on which the LOC counting happened. 
+
 To run the MusicMarketplace and the RunnerActivityTracker, move to the correct folder and:
 - in the `NeuRacket-Application` directory, run `neuracket gui.rkt`
 - in the `Racket-Application` directory, run `racket gui.rkt`
