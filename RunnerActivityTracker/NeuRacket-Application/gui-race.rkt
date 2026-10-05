@@ -76,17 +76,18 @@
                   (let ((map (new map-widget% [parent register-panel])))
     
                     ;; draw route on map
-                    (send map add-layer (line-layer 'TODO-workout (get-field route assoc-workout)))
+                    (send map add-layer (line-layer 'workout (get-field route assoc-workout)))
                     (send map zoom-level 13)
                     (send map move-to (car (get-field route assoc-workout))))
                   
                   (begin
-                    (choose-workout "Couple workout: " (lambda (c evt)
-                                                         (let ((assoc-workout (send c get-value)))
-                                                           (when assoc-workout
-                                                             (send user-race assoc-workout! assoc-workout)
-                                                             (send register-user race-run! user-race)
-                                                             (refresh)))))
+                    (choose-workout "Couple workout: "
+                                    (lambda (c evt)
+                                      (let ((assoc-workout (send c get-value)))
+                                        (when assoc-workout
+                                          (send user-race assoc-workout! assoc-workout)
+                                          (send register-user race-run! user-race)
+                                          (refresh)))))
                     (new button%
                          [parent register-panel]
                          [label "Deregister"]
@@ -101,16 +102,21 @@
                                   (if (and race1 race2)
                                       (let* ((t  (get-field time-prediction user-race))
                                              (t-floor (floor t)))
-                                        (string-append "Based on the selected workouts, your predicted time will be: " (number->string t-floor) "h" (number->string (floor (* 60 (- t t-floor)))) "m" "\nYou can change the selected workouts"))
+                                        (string-append "Based on the selected workouts, your predicted time will be: "
+                                                       (number->string t-floor) "h"
+                                                       (number->string (floor (* 60 (- t t-floor)))) "m"
+                                                       "\nYou can change the selected workouts"))
                                       "Select workouts to predict:"))])
-                    (choose-workout "Couple the first workout: " (lambda (c evt)
-                                                                   (let ((workout (send c get-value)))
-                                                                     (when  workout
-                                                                       (set-field! predicting-workout1 user-race workout)))))
-                    (choose-workout "Couple the second workout: " (lambda (c evt)
-                                                                    (let ((workout (send c get-value)))
-                                                                      (when  workout
-                                                                        (set-field! predicting-workout2 user-race workout)))))
+                    (choose-workout "Couple the first workout: "
+                                    (lambda (c evt)
+                                      (let ((workout (send c get-value)))
+                                        (when  workout
+                                          (set-field! predicting-workout1 user-race workout)))))
+                    (choose-workout "Couple the second workout: "
+                                    (lambda (c evt)
+                                      (let ((workout (send c get-value)))
+                                        (when  workout
+                                          (set-field! predicting-workout2 user-race workout)))))
                     (new button%
                          [parent register-panel]
                          [label "Chosen!"]

@@ -2,7 +2,8 @@
 
 (provide parse-gpx workout%)
 (require 
-  euclid/plane/angle racket/class racket/match racket/date (only-in racket/list last first) (only-in xml read-xml xml->xexpr document-element))
+  euclid/plane/angle racket/class racket/match racket/date
+  (only-in racket/list last first) (only-in xml read-xml xml->xexpr document-element))
 
 (define (extract-date str) ;; yyyy-mm-ddThh:mm:ssZ
   (let ((second (string->number (substring str 17 19)))
@@ -112,7 +113,9 @@
       (vector-ref c 1))
     (let ((deltaLat (angle-radians (degrees (- (lat c2) (lat c1)))))
           (deltaLon (angle-radians (degrees (- (lon c2) (lon c1))))))
-      (let* ((a (+ (expt (sin (/ deltaLat 2)) 2) (* (cos (angle-radians (degrees (lat c1)))) (cos (angle-radians (degrees (lat c2)))) (expt (sin (/ deltaLon 2)) 2))))
+      (let* ((a (+ (expt (sin (/ deltaLat 2)) 2)
+                   (* (cos (angle-radians (degrees (lat c1))))
+                      (cos (angle-radians (degrees (lat c2)))) (expt (sin (/ deltaLon 2)) 2))))
              (great-circle-distance (* 2 (atan (sqrt a) (sqrt (- 1 a))))))
         (* great-circle-distance 6371)))) ;; in km 
     
@@ -135,19 +138,3 @@
 
                    (define/public (assoc-injury! injury)
                      (set! injuries (cons injury injuries)))))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  

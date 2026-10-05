@@ -22,30 +22,37 @@
                      ;; workout
                      (new menu-item% [label "add workout"]
                           [parent workout]
-                          [callback (lambda (mnu evt) (swap-panel-to (add-workout-panel main (lambda (workout)
-                                                                                               (send user add-workout! workout)))))])
+                          [callback (lambda (mnu evt)
+                                      (swap-panel-to (add-workout-panel main (lambda (workout)
+                                                                               (send user add-workout! workout)))))])
                      (new menu-item% [label "view workouts"]
                           [parent workout]
-                          [callback (lambda (mnu evt) (swap-panel-to (view-workouts-panel main (get-field workouts user))))])
+                          [callback (lambda (mnu evt)
+                                      (swap-panel-to (view-workouts-panel main (get-field workouts user))))])
                      ;; races
                      (new menu-item% [label "add new race"]
                           [parent races]
-                          [callback (lambda (mnu evt) (swap-panel-to (add-race-panel main (lambda (race) (send database add-race! race)))))])
+                          [callback (lambda (mnu evt)
+                                      (swap-panel-to (add-race-panel main (lambda (race) (send database add-race! race)))))])
                      (new menu-item% [label "view races"]
                           [parent races]
-                          [callback (lambda (mnu evt) (swap-panel-to (view-races-panel main (send database get-races) user)))])
+                          [callback (lambda (mnu evt)
+                                      (swap-panel-to (view-races-panel main (send database get-races) user)))])
                      ;; injury
                      (new menu-item% [label "add injury"]
                           [parent injuries]
-                          [callback (lambda (mnu evt) (swap-panel-to (add-injury-panel main (lambda (injury) (send user add-injury! injury)) (get-field workouts user))))])
+                          [callback (lambda (mnu evt)
+                                      (swap-panel-to (add-injury-panel main (lambda (injury) (send user add-injury! injury)) (get-field workouts user))))])
                      (new menu-item% [label "view injuries"]
                           [parent injuries]
-                          [callback (lambda (mnu evt) (swap-panel-to (view-injuries-panel main (get-field injuries user))))])
+                          [callback (lambda (mnu evt)
+                                      (swap-panel-to (view-injuries-panel main (get-field injuries user))))])
     
                      ;; profile
                      (new menu-item% [label "home"]
                           [parent profile]
-                          [callback (lambda (mnu evt) (swap-panel-to (main-page main user)))])
+                          [callback (lambda (mnu evt)
+                                      (swap-panel-to (main-page main user)))])
                      (new menu-item% [label "log out"]
                           [parent profile]
                           [callback (lambda (mnu evt)
@@ -83,7 +90,10 @@
           (new message%
                [parent race-panel]
                [label "Upcoming races"])
-          (view-races-panel race-panel (map (lambda (usr-race) (get-field race usr-race)) (get-field upcoming-races user)) user))))
+          (view-races-panel race-panel
+                            (map (lambda (usr-race) (get-field race usr-race))
+                                 (get-field upcoming-races user))
+                            user))))
     top))
 
 
