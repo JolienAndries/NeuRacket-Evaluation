@@ -120,10 +120,24 @@
                        genre)
               ;; ugly code
               (let ((added? (if is-artist?
-                                (send marketplace add-artist? (new artist%
-                                                                   [username name] [password password] [location location]   [birth-year age] [main-genre genre] [overarching-mood mood] [biography biography]))
-                                (send marketplace add-regular-user?(new regular%
-                                                                        [username name] [password password] [location location]  [birth-year age] [main-genre genre] [overarching-mood mood] [biography biography])))))
+                                (send marketplace add-artist?
+                                      (new artist%
+                                           [username name]
+                                           [password password]
+                                           [location location]
+                                           [birth-year age]
+                                           [main-genre genre]
+                                           [overarching-mood mood]
+                                           [biography biography]))
+                                (send marketplace add-regular-user?
+                                      (new regular%
+                                           [username name]
+                                           [password password]
+                                           [location location]
+                                           [birth-year age]
+                                           [main-genre genre]
+                                           [overarching-mood mood]
+                                           [biography biography])))))
 
                 (if added?
                     (send login-register-dialog show #f)
@@ -326,26 +340,27 @@
 
 ;;;;;;;;;;;;;;;;;;;;;; pick existing album ;;;;;;;;;;;;;;;;;;;;;;
 
-(define pick-existing-album (new list-box%
-                                 [parent application-frame]
-                                 [choices '()] ;; wordt hierboven verandert bij selectie
-                                 [callback (lambda (box event)
-                                             (let ((selected (send box get-selections)))
-                                               (unless (null? selected)
-                                                 (let* ((album-title-artist (send box get-data (car selected))) ;; car ok want altijd null of 1 elem want single style
-                                                        (album (send marketplace find-album (vector-ref album-title-artist 0) (vector-ref album-title-artist 1))))
-                                                   (set-album-panel! album)
-                                                   (set! selected-album album)
-                                                   ;; vervang picking panel door specifiek album panel
-                                                   (send application-frame change-children (lambda (children) 
-                                                                                             (map (lambda (child)
-                                                                                                    (if (eq? pick-existing-album child)
-                                                                                                        specific-album-panel
-                                                                                                        child))
-                                                                                                  children)))))))]
-                                 [style '(single)]
-                                 [label "Album"]
-                                 [min-width 100]))
+(define pick-existing-album
+  (new list-box%
+       [parent application-frame]
+       [choices '()] ;; wordt hierboven verandert bij selectie
+       [callback (lambda (box event)
+                   (let ((selected (send box get-selections)))
+                     (unless (null? selected)
+                       (let* ((album-title-artist (send box get-data (car selected))) ;; car ok want altijd null of 1 elem want single style
+                              (album (send marketplace find-album (vector-ref album-title-artist 0) (vector-ref album-title-artist 1))))
+                         (set-album-panel! album)
+                         (set! selected-album album)
+                         ;; vervang picking panel door specifiek album panel
+                         (send application-frame change-children (lambda (children) 
+                                                                   (map (lambda (child)
+                                                                          (if (eq? pick-existing-album child)
+                                                                              specific-album-panel
+                                                                              child))
+                                                                        children)))))))]
+       [style '(single)]
+       [label "Album"]
+       [min-width 100]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;; music products ;;;;;;;;;;;;;;;;;;;;;;
@@ -379,16 +394,18 @@
            file-kind-choice
            (new button% [parent selling-panel]
                 [label "Next"]
-                [callback  (lambda (button event)
-                             (if (and file-path
-                                      (not (null? (send file-kind-choice get-selection))))
-                                 (let ((product (new digital%
-                                                     [seller (get-field current-user marketplace)]
-                                                     [content album]
-                                                     [file file-path]
-                                                     [file-kind (get-single-selection-selections file-kind-choices file-kind-choice)])))
-                                   (open-price-tab album product))
-                                 (new message% [label "Missing Fields - Please select a file and a file kind before continuing."] [parent selling-panel])))])))))
+                [callback
+                 (lambda (button event)
+                   (if (and file-path
+                            (not (null? (send file-kind-choice get-selection))))
+                       (let ((product (new digital%
+                                           [seller (get-field current-user marketplace)]
+                                           [content album]
+                                           [file file-path]
+                                           [file-kind (get-single-selection-selections file-kind-choices file-kind-choice)])))
+                         (open-price-tab album product))
+                       (new message% [label "Missing Fields - Please select a file and a file kind before continuing."]
+                            [parent selling-panel])))])))))
 
 
 
@@ -396,12 +413,17 @@
   (send selling-panel change-children
         (lambda (children)
           
-          (define media-cond-choice (new choice% [label "Media Condition"] [choices condition-choices] [parent selling-panel]))
-          (define sleeve-cond-choice (new choice% [label "Sleeve Condition"] [choices condition-choices] [parent selling-panel]))
-          (define stock (new text-field% [label "How many do you want to sell?"] [parent selling-panel]))
+          (define media-cond-choice
+            (new choice% [label "Media Condition"] [choices condition-choices] [parent selling-panel]))
+          (define sleeve-cond-choice
+            (new choice% [label "Sleeve Condition"] [choices condition-choices] [parent selling-panel]))
+          (define stock
+            (new text-field% [label "How many do you want to sell?"] [parent selling-panel]))
 
-          (define rpm-choice (new choice% [label "RPM"] [choices rpm-choices] [parent selling-panel]))
-          (define size-choice (new choice% [label "Size"] [choices size-choices] [parent selling-panel]))
+          (define rpm-choice
+            (new choice% [label "RPM"] [choices rpm-choices] [parent selling-panel]))
+          (define size-choice
+            (new choice% [label "Size"] [choices size-choices] [parent selling-panel]))
 
           
           (list
@@ -412,28 +434,29 @@
            size-choice
            (new button% [parent selling-panel]
                 [label "Next"]
-                [callback (lambda (button event) 
-                            (let ((media-cond-selection (get-single-selection-selections condition-choices media-cond-choice))
-                                  (sleeve-cond-selection (get-single-selection-selections condition-choices sleeve-cond-choice))
-                                  (stock-val (string->number (send stock get-value)))
-                                  (rpm-selection (get-single-selection-selections rpm-choices rpm-choice))
-                                  (size-selection (get-single-selection-selections size-choices size-choice)))
-                              (if (and media-cond-selection
-                                       sleeve-cond-selection
-                                       stock-val
-                                       rpm-selection
-                                       size-selection)
-                                  (let ((product (new vinyl%
-                                                      [seller (get-field current-user marketplace)]
-                                                      [content album]
-                                                      [media-condition media-cond-selection]
-                                                      [sleeve-condition sleeve-cond-selection]
-                                                      [stock stock-val]
-                                                      [RPM rpm-selection]
-                                                      [size size-selection])))
-                                    (open-price-tab album product))
+                [callback
+                 (lambda (button event) 
+                   (let ((media-cond-selection (get-single-selection-selections condition-choices media-cond-choice))
+                         (sleeve-cond-selection (get-single-selection-selections condition-choices sleeve-cond-choice))
+                         (stock-val (string->number (send stock get-value)))
+                         (rpm-selection (get-single-selection-selections rpm-choices rpm-choice))
+                         (size-selection (get-single-selection-selections size-choices size-choice)))
+                     (if (and media-cond-selection
+                              sleeve-cond-selection
+                              stock-val
+                              rpm-selection
+                              size-selection)
+                         (let ((product (new vinyl%
+                                             [seller (get-field current-user marketplace)]
+                                             [content album]
+                                             [media-condition media-cond-selection]
+                                             [sleeve-condition sleeve-cond-selection]
+                                             [stock stock-val]
+                                             [RPM rpm-selection]
+                                             [size size-selection])))
+                           (open-price-tab album product))
 
-                                  (new message% [label "Missing Fields - Please fill everything in before continuing."] [parent selling-panel]))))])))))
+                         (new message% [label "Missing Fields - Please fill everything in before continuing."] [parent selling-panel]))))])))))
 
 
 
@@ -441,32 +464,36 @@
 (define (show-physical-panel album format)
   (send selling-panel change-children
         (lambda (children)
-          (define media-cond-choice (new choice% [label "Media Condition"] [choices condition-choices] [parent selling-panel]))
-          (define sleeve-cond-choice (new choice% [label "Sleeve Condition"] [choices condition-choices] [parent selling-panel]))
-          (define stock (new text-field% [label "How many do you want to sell?"] [parent selling-panel]))
+          (define media-cond-choice
+            (new choice% [label "Media Condition"] [choices condition-choices] [parent selling-panel]))
+          (define sleeve-cond-choice
+            (new choice% [label "Sleeve Condition"] [choices condition-choices] [parent selling-panel]))
+          (define stock
+            (new text-field% [label "How many do you want to sell?"] [parent selling-panel]))
           (list
            media-cond-choice
            sleeve-cond-choice
            stock
            (new button% [parent selling-panel]
                 [label "Next"]
-                [callback (lambda (button event) 
-                            (let ((media-cond-selection (get-single-selection-selections condition-choices media-cond-choice))
-                                  (sleeve-cond-selection (get-single-selection-selections condition-choices sleeve-cond-choice))
-                                  (stock-val (string->number (send stock get-value))))
-                              (if (and media-cond-selection
-                                       sleeve-cond-selection
-                                       stock-val)
-                                  (let ((product (new physical%
-                                                      [seller (get-field current-user marketplace)]
-                                                      [content album]
-                                                      [media-condition media-cond-selection]
-                                                      [sleeve-condition sleeve-cond-selection]
-                                                      [product-format format]
-                                                      [stock stock-val])))
-                                    (open-price-tab album product))
+                [callback
+                 (lambda (button event) 
+                   (let ((media-cond-selection (get-single-selection-selections condition-choices media-cond-choice))
+                         (sleeve-cond-selection (get-single-selection-selections condition-choices sleeve-cond-choice))
+                         (stock-val (string->number (send stock get-value))))
+                     (if (and media-cond-selection
+                              sleeve-cond-selection
+                              stock-val)
+                         (let ((product (new physical%
+                                             [seller (get-field current-user marketplace)]
+                                             [content album]
+                                             [media-condition media-cond-selection]
+                                             [sleeve-condition sleeve-cond-selection]
+                                             [product-format format]
+                                             [stock stock-val])))
+                           (open-price-tab album product))
 
-                                  (new message% [label "Missing Fields - Please fill everything in before continuing."] [parent selling-panel]))))])))))
+                         (new message% [label "Missing Fields - Please fill everything in before continuing."] [parent selling-panel]))))])))))
 
 
 (define (open-price-tab album product)
@@ -586,27 +613,28 @@
 (new button% 
      [parent track-basic-info-panel]
      [label "Next"]
-     [callback  (lambda (button event)
-                  ;; get the values 
-                  (let ((title (send track-title get-value))
-                        (artist-idx (send track-artist get-selection))
-                        (year (string->number (send track-year get-value)))
-                        (track-mood (get-single-selection-selections mood-choices track-mood))
-                        (track-path  track-file-path))
-                    ;; check that everything is filled in
-                    (unless (or (string=? title "")
-                                (not artist-idx)
-                                (not year)
-                                (not track-mood)
-                                (not track-path))
-                      (let ((new-track (new track% [title title]
-                                            [artist (send track-artist get-data artist-idx)]
-                                            [mood track-mood]
-                                            [release-year year]
-                                            [file track-file-path])))
+     [callback
+      (lambda (button event)
+        ;; get the values 
+        (let ((title (send track-title get-value))
+              (artist-idx (send track-artist get-selection))
+              (year (string->number (send track-year get-value)))
+              (track-mood (get-single-selection-selections mood-choices track-mood))
+              (track-path  track-file-path))
+          ;; check that everything is filled in
+          (unless (or (string=? title "")
+                      (not artist-idx)
+                      (not year)
+                      (not track-mood)
+                      (not track-path))
+            (let ((new-track (new track% [title title]
+                                  [artist (send track-artist get-data artist-idx)]
+                                  [mood track-mood]
+                                  [release-year year]
+                                  [file track-file-path])))
 
-                        ;; remove basic information from pop up and show song analysis
-                        (send track-pop-up change-children (lambda (children) `(,(updated-track-analysis-panel new-track))))))))])
+              ;; remove basic information from pop up and show song analysis
+              (send track-pop-up change-children (lambda (children) `(,(updated-track-analysis-panel new-track))))))))])
 
 
 ;;;;;;;;;;;;;;;;;;;; song analysis ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -620,92 +648,94 @@
 
 
 (define (updated-track-analysis-panel new-track)
-  (send track-analysis-panel change-children (lambda (children)
-                                               (let ((bpm (get-field bpm new-track))
-                                                     (genre  (get-field genre new-track))
-                                                     (instrument (get-field instrument new-track)))
-                                                 ;; propose
-                                                 (define track-genre-proposed (new message% [parent track-analysis-panel] [label (string-append "Analysed genre is: "   genre)]))
-                                                 (define track-instrument-proposed (new message% [parent track-analysis-panel] [label (string-append "Analysed instrument is: "  instrument)]))
-                                                 (define track-BPM-proposed (new message% [parent track-analysis-panel] [label (string-append "Analysed BPM is: " (number->string bpm))]))
-                                                 (list
-                                                  track-genre-proposed
-                                                  (new button% 
-                                                       [parent track-analysis-panel]
-                                                       [label "Change genre"]
-                                                       [callback (lambda (button event)
-                                                                   (define track-genre-box (new list-box%
-                                                                                                [parent change-analysis-panel]
-                                                                                                [choices genre-choices]
-                                                                                                [style '(single)]
-                                                                                                [label "Genres"]
-                                                                                                [min-width 300]))
-                                                                   (send change-analysis-panel change-children (lambda (children)
-                                                                                                                 `(,track-genre-box ,(new button% [parent change-analysis-panel]
-                                                                                                                                          [label "Change!"]
-                                                                                                                                          [callback (lambda (button event)
-                                                                                                                                                      (let ((selected (get-single-selection-selections genre-choices track-genre-box)))
-                                                                                                                                                        (if selected 
-                                                                                                                                                            (begin (set! genre  selected)
-                                                                                                                                                                   (send track-genre-proposed set-label (string-append "Genre: " selected))
-                                                                                                                                                                   (send change-analysis-pop-up show #f))
-                                                                                                                                                            (new message% [parent change-analysis-panel] [label "Select something"]))))]))))
-                                                                   (send change-analysis-pop-up show #t))])
-                                                  track-instrument-proposed
-                                                  (new button% 
-                                                       [parent track-analysis-panel]
-                                                       [label "Change Instrument"]
-                                                       [callback (lambda (button event)
-                                                                   (define track-instruments-box (new list-box%
-                                                                                                      [parent change-analysis-panel]
-                                                                                                      [choices track-instrument-choices]
-                                                                                                      [style '(single vertical-label)]
-                                                                                                      [label "Instruments"]
-                                                                                                      [min-width 300]))
-                                                                   (send change-analysis-panel change-children (lambda (children)
-                                                                                                                 `(,track-instruments-box ,(new button% [parent change-analysis-panel]
-                                                                                                                                                [label "Change!"]
-                                                                                                                                                [callback (lambda (button event)
-                                                                                                                                                            (let ((selected (get-single-selection-selections track-instrument-choices track-instruments-box)))
-                                                                                                                                                              (if selected 
-                                                                                                                                                                  (begin (set! genre  selected)
-                                                                                                                                                                         (send track-instrument-proposed set-label (string-append "Instrument: " selected))
-                                                                                                                                                                         (send change-analysis-pop-up show #f))
-                                                                                                                                                                  (new message% [parent change-analysis-panel] [label "Select something"]))))]))))
-                                                                   (send change-analysis-pop-up show #t))])
-                                                  track-BPM-proposed
-                                                  (new button% 
-                                                       [parent track-analysis-panel]
-                                                       [label "Change BPM"]
-                                                       [callback (lambda (button event)
-                                                                   (define track-tempo (new text-field%
-                                                                                            [label "BPM"]
-                                                                                            [parent change-analysis-panel]))
-                                                                   (send change-analysis-panel change-children (lambda (children)
-                                                                                                                 `(,track-tempo ,(new button% [parent change-analysis-panel]
-                                                                                                                                      [label "Change!"]
-                                                                                                                                      [callback (lambda (button event)
-                                                                                                                                                  (let ((bpm-number (string->number (send track-tempo get-value))))
-                                                                                                                                                    (if bpm-number
-                                                                                                                                                        (begin (set! bpm bpm-number)
-                                                                                                                                                               (send track-BPM-proposed set-label (string-append "BPM: " (send track-tempo get-value)))
-                                                                                                                                                               (send change-analysis-pop-up show #f))
-                                                                                                                                                        (new message% [parent change-analysis-panel] [label "Write a number"]))))]))))
-                                                                   (send change-analysis-pop-up show #t))])
+  (send track-analysis-panel change-children
+        (lambda (children)
+          (let ((bpm (get-field bpm new-track))
+                (genre  (get-field genre new-track))
+                (instrument (get-field instrument new-track)))
+            ;; propose
+            (define track-genre-proposed (new message% [parent track-analysis-panel] [label (string-append "Analysed genre is: "   genre)]))
+            (define track-instrument-proposed (new message% [parent track-analysis-panel] [label (string-append "Analysed instrument is: "  instrument)]))
+            (define track-BPM-proposed (new message% [parent track-analysis-panel] [label (string-append "Analysed BPM is: " (number->string bpm))]))
+            (list
+             track-genre-proposed
+             (new button% 
+                  [parent track-analysis-panel]
+                  [label "Change genre"]
+                  [callback (lambda (button event)
+                              (define track-genre-box (new list-box%
+                                                           [parent change-analysis-panel]
+                                                           [choices genre-choices]
+                                                           [style '(single)]
+                                                           [label "Genres"]
+                                                           [min-width 300]))
+                              (send change-analysis-panel change-children (lambda (children)
+                                                                            `(,track-genre-box ,(new button% [parent change-analysis-panel]
+                                                                                                     [label "Change!"]
+                                                                                                     [callback (lambda (button event)
+                                                                                                                 (let ((selected (get-single-selection-selections genre-choices track-genre-box)))
+                                                                                                                   (if selected 
+                                                                                                                       (begin (set! genre  selected)
+                                                                                                                              (send track-genre-proposed set-label (string-append "Genre: " selected))
+                                                                                                                              (send change-analysis-pop-up show #f))
+                                                                                                                       (new message% [parent change-analysis-panel] [label "Select something"]))))]))))
+                              (send change-analysis-pop-up show #t))])
+             track-instrument-proposed
+             (new button% 
+                  [parent track-analysis-panel]
+                  [label "Change Instrument"]
+                  [callback (lambda (button event)
+                              (define track-instruments-box (new list-box%
+                                                                 [parent change-analysis-panel]
+                                                                 [choices track-instrument-choices]
+                                                                 [style '(single vertical-label)]
+                                                                 [label "Instruments"]
+                                                                 [min-width 300]))
+                              (send change-analysis-panel change-children (lambda (children)
+                                                                            `(,track-instruments-box ,(new button% [parent change-analysis-panel]
+                                                                                                           [label "Change!"]
+                                                                                                           [callback (lambda (button event)
+                                                                                                                       (let ((selected (get-single-selection-selections track-instrument-choices track-instruments-box)))
+                                                                                                                         (if selected 
+                                                                                                                             (begin (set! genre  selected)
+                                                                                                                                    (send track-instrument-proposed set-label (string-append "Instrument: " selected))
+                                                                                                                                    (send change-analysis-pop-up show #f))
+                                                                                                                             (new message% [parent change-analysis-panel] [label "Select something"]))))]))))
+                              (send change-analysis-pop-up show #t))])
+             track-BPM-proposed
+             (new button% 
+                  [parent track-analysis-panel]
+                  [label "Change BPM"]
+                  [callback (lambda (button event)
+                              (define track-tempo (new text-field%
+                                                       [label "BPM"]
+                                                       [parent change-analysis-panel]))
+                              (send change-analysis-panel change-children
+                                    (lambda (children)
+                                      `(,track-tempo ,(new button% [parent change-analysis-panel]
+                                                           [label "Change!"]
+                                                           [callback (lambda (button event)
+                                                                       (let ((bpm-number (string->number (send track-tempo get-value))))
+                                                                         (if bpm-number
+                                                                             (begin (set! bpm bpm-number)
+                                                                                    (send track-BPM-proposed set-label (string-append "BPM: " (send track-tempo get-value)))
+                                                                                    (send change-analysis-pop-up show #f))
+                                                                             (new message% [parent change-analysis-panel] [label "Write a number"]))))]))))
+                              (send change-analysis-pop-up show #t))])
 
-                                                  (new button%
-                                                       [parent track-analysis-panel]
-                                                       [label "Confirm"]
-                                                       ; Callback procedure for a button click:
-                                                       [callback (lambda (button event)
-                                                                   ;; update track properties
-                                                                   (send new-track set-instrument-genre-bpms!  instrument genre bpm)
-                                                                   ;; add the track to the track list
-                                                                   (set! track-list (cons new-track
-                                                                                          track-list))
-                                                                   (set! titles (cons (get-field title new-track) titles))
-                                                                   (send track-list-box set (reverse titles))
-                                                                   (track-added-clear-all!))])))))
+             (new button%
+                  [parent track-analysis-panel]
+                  [label "Confirm"]
+                  ; Callback procedure for a button click:
+                  [callback (lambda (button event)
+                              ;; update track properties
+                              (send new-track set-instrument-genre-bpms!  instrument genre bpm)
+                              ;; add the track to the track list
+                              (set! track-list (cons new-track
+                                                     track-list))
+                              (set! titles (cons (get-field title new-track) titles))
+                              (send track-list-box set (reverse titles))
+                              (track-added-clear-all!))])))))
   track-analysis-panel)
 
 ;; to start only show basic info:
@@ -735,17 +765,18 @@
 
   (send specific-album-panel change-children (lambda (children) 
                                                ;; voeg de dingen van de artiest toe
-                                               (define products-list-box (new list-box%
-                                                                              [parent specific-album-panel]
-                                                                              [choices '()] 
-                                                                              [style '(single)]
-                                                                              [label "How you can buy this album"]
-                                                                              [min-width 100]
-                                                                              [callback (lambda (lbox event)
-                                                                                          (let ((idx (send lbox get-selection)))
-                                                                                            (unless (null? idx)
-                                                                                              (let ((product (send lbox get-data  idx)))
-                                                                                                (show-product-page product)))))]))
+                                               (define products-list-box
+                                                 (new list-box%
+                                                      [parent specific-album-panel]
+                                                      [choices '()] 
+                                                      [style '(single)]
+                                                      [label "How you can buy this album"]
+                                                      [min-width 100]
+                                                      [callback (lambda (lbox event)
+                                                                  (let ((idx (send lbox get-selection)))
+                                                                    (unless (null? idx)
+                                                                      (let ((product (send lbox get-data  idx)))
+                                                                        (show-product-page product)))))]))
                                                (for-each (lambda (product)
                                                            (send products-list-box append
                                                                  (string-append (get-field product-format product) " - €" (number->string (get-field price product)))
@@ -777,46 +808,47 @@
 
 (define (show-track-panel track)
   (define maybe-no-play (new message% [label ""] [parent specific-track-panel]))
-  (send specific-track-panel change-children (lambda (children) 
+  (send specific-track-panel change-children
+        (lambda (children) 
 
-                                               `(,(new message% [parent specific-track-panel] [label "Title"])
-                                                 ,(new message% [parent specific-track-panel] [label (get-field title track)])
+          `(,(new message% [parent specific-track-panel] [label "Title"])
+            ,(new message% [parent specific-track-panel] [label (get-field title track)])
 
-                                                 ,(new message% [parent specific-track-panel] [label "Artist"])
-                                                 ,(new button%
-                                                       [parent specific-track-panel]
-                                                       [label (get-field username (get-field artist track))]
-                                                       [callback (lambda (button event)
-                                                                   (set-artist-panel! (get-field artist track))
-                                                                   (only-show-list-panels application-frame `(,specific-artist-panel)))])
+            ,(new message% [parent specific-track-panel] [label "Artist"])
+            ,(new button%
+                  [parent specific-track-panel]
+                  [label (get-field username (get-field artist track))]
+                  [callback (lambda (button event)
+                              (set-artist-panel! (get-field artist track))
+                              (only-show-list-panels application-frame `(,specific-artist-panel)))])
 
-                                                 ,(new message% [parent specific-track-panel]
-                                                       [label (string-append "Release Year\t" (number->string (get-field release-year track)))])
+            ,(new message% [parent specific-track-panel]
+                  [label (string-append "Release Year\t" (number->string (get-field release-year track)))])
 
-                                                 ,(new button% [label "Play Preview"]
-                                                       [parent specific-track-panel]
-                                                       [callback (lambda (button event)
-                                                                   (unless (play-sound (get-field file track) #t)
-                                                                     (send maybe-no-play set-label "Audio track could not play")))])
-                                                 ,maybe-no-play
+            ,(new button% [label "Play Preview"]
+                  [parent specific-track-panel]
+                  [callback (lambda (button event)
+                              (unless (play-sound (get-field file track) #t)
+                                (send maybe-no-play set-label "Audio track could not play")))])
+            ,maybe-no-play
 
-                                                 ,(new message%
-                                                       [parent specific-track-panel]
-                                                       [label  "Analysis:"])
+            ,(new message%
+                  [parent specific-track-panel]
+                  [label  "Analysis:"])
 
-                                                 ,(new message%
-                                                       [parent specific-track-panel]
-                                                       [label (string-append "Instrument: "  (get-field instrument track))])
+            ,(new message%
+                  [parent specific-track-panel]
+                  [label (string-append "Instrument: "  (get-field instrument track))])
                                                
 
-                                                 ,(new message%
-                                                       [parent specific-track-panel]
-                                                       [label (string-append "Genre: "  (get-field genre track))])
+            ,(new message%
+                  [parent specific-track-panel]
+                  [label (string-append "Genre: "  (get-field genre track))])
                                                
 
-                                                 ,(new message%
-                                                       [parent specific-track-panel]
-                                                       [label (string-append "BPM: " (number->string (get-field bpm track)))]))))
+            ,(new message%
+                  [parent specific-track-panel]
+                  [label (string-append "BPM: " (number->string (get-field bpm track)))]))))
   (only-show-list-panels application-frame `(,specific-track-panel)))
 
 
@@ -842,7 +874,8 @@
                                              (unless (null? selected)
                                                (let ((album (send box get-data (car selected)))) ;; car ok want altijd null of 1 elem want single style 
                                                  (set-album-panel! album)
-                                                 (only-show-list-panels application-frame `(,specific-artist-panel ,specific-album-panel))))))]
+                                                 (only-show-list-panels application-frame
+                                                                        `(,specific-artist-panel ,specific-album-panel))))))]
                                [min-width 100]))
   (for-each (lambda (album)
               (send discography-box append (get-field title album) album))
@@ -881,8 +914,10 @@
                                (set-artist-panel! artist)
                                (only-show-list-panels application-frame `(,specific-artist-panel)))])
               
-             ,(new message% [parent specific-product-panel] [label (string-append "Format: " (get-field product-format product))])
-             ,(new message% [parent specific-product-panel] [label (string-append "Price: €" (number->string (get-field price product)))]))
+             ,(new message% [parent specific-product-panel]
+                   [label (string-append "Format: " (get-field product-format product))])
+             ,(new message% [parent specific-product-panel]
+                   [label (string-append "Price: €" (number->string (get-field price product)))]))
            ;; physical 
            (if (is-a? product physical%)
                `(,(new message% [parent specific-product-panel]

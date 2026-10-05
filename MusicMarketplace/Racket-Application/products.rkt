@@ -1,9 +1,6 @@
 #lang racket/base
 (require racket/class "audio-model.rkt" "price-model.rkt")
-
 (provide album% physical% product% track% digital% vinyl%)
-
-
 
 ;;;;;;;;;;;;;;;;;;; music ;;;;;;;;;;;;;;;;;;; 
 (define music% (class object%
