@@ -134,19 +134,3 @@
 
                    (define/public (assoc-injury! injury)
                      (set! injuries (cons injury injuries)))))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
