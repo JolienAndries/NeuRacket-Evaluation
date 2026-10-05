@@ -27,10 +27,12 @@
 
 (define database (new database%))
 
+(define example-workout (parse-gpx "../example.gpx"))
+
 (define (fill-database!)
-  (let* ((20bxl (parse-gpx "../../../gpx-workouts/20km_door_Brussel_Strava_Export.gpx"))
-         (S2R5.2 (parse-gpx "../../../gpx-workouts/S2R_W5S2.gpx"))
-         (S2R5.3 (parse-gpx "../../../gpx-workouts/S2R_W5S3.gpx"))
+  (let* ((20bxl example-workout)
+         (S2R5.2 example-workout)
+         (S2R5.3 example-workout)
          (brussels-20k (new race% [name "Brussels 20K"] [place "Brussels"] [date (make-date 0 0 0 12 05 2024 0 0 #f 0)] [distance 20] [elevation-difference 150]))
          (amsterdam-marathon (new race% [name "Amsterdam Marathon"] [place "Amsterdam"] [date (make-date 0 0 0 06 10 2026 0 0 #f 0)] [distance 42.195] [elevation-difference 120]))
          (vienna-marathon (new race% [name "Vienna Marathon"] [place "Vienna"] [date (make-date 0 0 0 20 04 2027 0 0 #f 0)] [distance 42.195] [elevation-difference 85]))
