@@ -3,7 +3,8 @@
 (provide artist% regular%)
 
 (define user% (class object%
-                (init-field username password location birth-year [main-genre #f] [overarching-mood #f] [biography ""] 
+                (init-field username password location birth-year
+                            [main-genre #f] [overarching-mood #f] [biography ""] 
                             [to-sell '()]
                             [sold '()])
                 (external-neural-field relevant-albums)

@@ -2,7 +2,6 @@
 (require mlobject (only-in racket/function identity) racket/class)
 (provide (all-defined-out))
 
-
 (define (album->needed-fields album)
   (list (get-field title album)
         (get-field username (get-field artist album))

@@ -1,7 +1,7 @@
 #lang racket/base
 (require racket/gui (only-in racket/math exact-round))
 (require "products.rkt"  "marketplace.rkt" "users.rkt" "Enum-Information.rkt" (only-in racket/stream stream->list))
-(define application-frame (new frame% [label "Application"]))
+(define application-frame (new frame% [label "Music Marketplace"]))
 
 ;;;;;;;;;;;;;;;;;;;  helpers ;;;;;;;;;;;;;;;;;;; 
 
@@ -715,11 +715,7 @@
                   [callback
                    (lambda (button event)
                      ;; update track properties
-                     (set-fields! (instrument genre bpm)
-                                  new-track
-                                  (proposed-instrument
-                                   proposed-genre
-                                   proposed-bpm))
+                     (set-fields! (instrument genre bpm)  new-track (proposed-instrument proposed-genre proposed-bpm))
                      ;; add the track to the track list
                      (set! track-list (cons new-track
                                             track-list))

@@ -30,8 +30,6 @@
                  (label-field [genre #f] [instrument #f] [bpm #f])
                  (neural-field [(predicted-genre predicted-instrument predicted-bpm) audio-model (file) (genre instrument bpm)])))
 
-
-
 ;;;;;;;;;;;;;;;;;;; product ;;;;;;;;;;;;;;;;;;; 
 
 
