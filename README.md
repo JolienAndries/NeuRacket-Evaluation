@@ -13,7 +13,10 @@ To run the MusicMarketplace and the RunnerActivityTracker, move to the correct f
 - in the `NeuRacket-Application` directory, run `neuracket gui.rkt`
 - in the `Racket-Application` directory, run `racket gui.rkt`
 
-In order to be able to run `neuracket gui.rkt`, you must first download and compile [NeuRacket](https://github.com/JolienAndries/NeuRacket), and alias `neuracket` to `...path.../NeuRacket/racket/bin/racket`
+Important: 
+- In order to be able to run `neuracket gui.rkt`, you must first download and compile [NeuRacket](https://github.com/JolienAndries/NeuRacket), and alias `neuracket` to `...path.../NeuRacket/racket/bin/racket`
+- NeuRacket must be configured to use a Python installation that has access to the necessary libraries for the machine learning models.
+- The runner activity tracking application needs two additional racket packages, `euclid` and `map-widget`. Install these using `...path.../NeuRacket/racket/bin/raco pkg install <pkg-name>`
 
 ## Side Info
 - We provide an example a-hit.wav for the MusicMarketplace to add a song in the application.
