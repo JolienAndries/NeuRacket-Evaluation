@@ -6,6 +6,7 @@ import raceTimePrediction
 import tensorflow as tf
 import numpy as np
 
+# the model was converted from matlab to tensorflow. the original matlab model is from https://github.com/ddracopo/race-prediction
 model = raceTimePrediction.load_model()
 
 
