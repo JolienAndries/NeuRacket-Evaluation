@@ -21,3 +21,7 @@ Important:
 ## Side Info
 - We provide an example a-hit.wav for the MusicMarketplace to add a song in the application.
 - We provide an example example.gpx for the RunnerActivityTracker to add a workout in the application.
+
+## Attribution
+Some of the ML models are (adapted from) existing models. The others are models trained on synthetic data.
+The source attribution can be found in the files of the ML components themselves.
